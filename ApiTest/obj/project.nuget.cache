@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "dgSpecHash": "7Rn0TtKLhnc=",
+  "success": true,
+  "projectFilePath": "C:\\Users\\Mikke\\Documents\\giraf-ai-v2\\ApiTest\\ApiTest.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\Mikke\\.nuget\\packages\\microsoft.aspnetcore.openapi\\10.0.12\\microsoft.aspnetcore.openapi.10.0.12.nupkg.sha512",
+    "C:\\Users\\Mikke\\.nuget\\packages\\microsoft.openapi\\2.12.0\\microsoft.openapi.2.12.0.nupkg.sha512"
+  ],
+  "logs": []
+}

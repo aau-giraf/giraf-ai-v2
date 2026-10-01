@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="CMakeProjectFlavorService">
+    <option name="flavorId" value="CMakePlainProjectFlavor" />
+  </component>
+  <component name="CMakeSettings">
+    <configurations />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="ab11bed6-a865-4c98-b80a-8488c25b9c1b" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/ApiTest/classes/ImageClass.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ApiTest/classes/TtsClass.cs" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;MBielefeldt1&quot;
+  }
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/aau-giraf/giraf-ai-v2.git&quot;,
+    &quot;accountId&quot;: &quot;24938f69-9f74-41c3-99f7-cc901a070e94&quot;
+  }
+}</component>
+  <component name="HighlightingSettingsPerFile">
+    <setting file="file://$PROJECT_DIR$/ApiTest/Program.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/ApiTest/classes/Image.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/ApiTest/classes/TtsClass.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/ApiTest/classes/UserPreferences.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/ApiTest/classes/UserPreferencesClass.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/ApiTest/classes/image.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/ApiTest/controllers/ImageGenerationController.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/ApiTest/controllers/TtsController.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/ApiTest/controllers/schemas.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/ApiTest/controllers/sendImage.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock://C:/Users/Mikke/Documents/giraf-ai-v2/ApiTest/classes/ImageClass.cs" root0="SKIP_HIGHLIGHTING" />
+  </component>
+  <component name="McpProjectServerCommands">
+    <commands />
+    <urls />
+  </component>
+  <component name="MetaFilesCheckinStateConfiguration" checkMetaFiles="true" />
+  <component name="NextEditCompletionFeaturesState">
+    <decayedCancelled>
+      <entry key="MS100" value="1.7448752892851211" />
+      <entry key="MS500" value="5.457802801506535" />
+      <entry key="S2" value="15.987078443503759" />
+      <entry key="S5" value="33.05812413459415" />
+      <entry key="S10" value="52.144818230624224" />
+      <entry key="S30" value="81.19908169040328" />
+      <entry key="S60" value="111.86948891069056" />
+      <entry key="M2" value="169.44253627490005" />
+      <entry key="M5" value="280.04179952278645" />
+      <entry key="M10" value="398.7260757173486" />
+      <entry key="M15" value="479.0910441821823" />
+      <entry key="M30" value="622.2099883151591" />
+      <entry key="H1" value="802.1817940840936" />
+      <entry key="H2" value="1035.8194881976256" />
+      <entry key="H4" value="1267.4263105711289" />
+      <entry key="D1" value="1644.7936895384692" />
+      <entry key="W1" value="2046.2500335994503" />
+    </decayedCancelled>
+    <decayedSelected>
+      <entry key="MS100" value="0.0" />
+      <entry key="MS500" value="1.454259426750155E-302" />
+      <entry key="S2" value="3.4754825734830116E-76" />
+      <entry key="S5" value="6.931542384058736E-31" />
+      <entry key="S10" value="1.0055889665646344E-15" />
+      <entry key="S30" value="1.612299403545232E-5" />
+      <entry key="S60" value="0.006491622498136264" />
+      <entry key="M2" value="0.1453243975736506" />
+      <entry key="M5" value="1.1630405714821563" />
+      <entry key="M10" value="2.55675830914314" />
+      <entry key="M15" value="3.4009753664825353" />
+      <entry key="M30" value="5.069570198857842" />
+      <entry key="H1" value="8.166273389886884" />
+      <entry key="H2" value="12.90732561007557" />
+      <entry key="H4" value="18.15837930653817" />
+      <entry key="D1" value="29.076692167842513" />
+      <entry key="W1" value="38.67285233896212" />
+    </decayedSelected>
+    <decayedShown>
+      <entry key="MS100" value="1.6799868702612075" />
+      <entry key="MS500" value="5.409543299953088" />
+      <entry key="S2" value="15.948892822906988" />
+      <entry key="S5" value="33.0262578667063" />
+      <entry key="S10" value="52.11960590364055" />
+      <entry key="S30" value="81.18600261918955" />
+      <entry key="S60" value="111.86667592172839" />
+      <entry key="M2" value="169.57835845177755" />
+      <entry key="M5" value="281.1928440323185" />
+      <entry key="M10" value="401.27046524852335" />
+      <entry key="M15" value="482.48020962905065" />
+      <entry key="M30" value="627.2690657225864" />
+      <entry key="H1" value="810.3383415546139" />
+      <entry key="H2" value="1048.7185409819135" />
+      <entry key="H4" value="1285.578619333144" />
+      <entry key="D1" value="1673.8686561613029" />
+      <entry key="W1" value="2084.9225615888895" />
+    </decayedShown>
+  </component>
+  <component name="ProblemsViewState">
+    <option name="selectedTabId" value="CurrentFile" />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;customColor&quot;: &quot;&quot;,
+  &quot;associatedIndex&quot;: 7
+}</component>
+  <component name="ProjectId" id="3Jic0LNHg0qRmqaYeJYhWAIX2xl" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "HTTP Request.All in ApiTest.executor": "Run",
+    "HTTP Request.ApiTest | #1.executor": "Run",
+    "HTTP Request.ApiTest | #3.executor": "Run",
+    "KEY_CHAT_IN_TOOLWINDOW": "false",
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.MCP Project settings loaded": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.cidr.known.project.marker": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "RunOnceActivity.readMode.enableVisualFormatting": "true",
+    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
+    "cidr.known.project.marker": "true",
+    "codeWithMe.voiceChat.enabledByDefault": "false",
+    "git-widget-placeholder": "test-endpoint",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "preferences.keymap"
+  }
+}]]></component>
+  <component name="RunDashboard">
+    <option name="configurationStatuses">
+      <map>
+        <entry key="HttpClient.HttpRequestRunConfigurationType">
+          <value>
+            <map>
+              <entry key="ApiTest | #1" value="STOPPED" />
+            </map>
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="RunManager" selected="HTTP Request.ApiTest | #1">
+    <configuration name="All in ApiTest" type="HttpClient.HttpRequestRunConfigurationType" factoryName="HTTP Request" temporary="true" path="$PROJECT_DIR$/ApiTest/ApiTest.http">
+      <method v="2" />
+    </configuration>
+    <configuration name="ApiTest | #1" type="HttpClient.HttpRequestRunConfigurationType" factoryName="HTTP Request" temporary="true" nameIsGenerated="true" path="$PROJECT_DIR$/ApiTest/ApiTest.http" executionIdentifier="#1" runType="Run single request">
+      <method v="2" />
+    </configuration>
+    <configuration name="ApiTest | #3" type="HttpClient.HttpRequestRunConfigurationType" factoryName="HTTP Request" temporary="true" nameIsGenerated="true" path="$PROJECT_DIR$/ApiTest/ApiTest.http" executionIdentifier="#3" index="3" runType="Run single request">
+      <method v="2" />
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="HTTP Request.ApiTest | #1" />
+        <item itemvalue="HTTP Request.ApiTest | #3" />
+        <item itemvalue="HTTP Request.All in ApiTest" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="ab11bed6-a865-4c98-b80a-8488c25b9c1b" name="Changes" comment="" />
+      <created>1790147114011</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1790147114011</updated>
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="UnityCheckinConfiguration" checkUnsavedScenes="true" />
+  <component name="UnityProjectConfiguration" hasMinimizedUI="false" />
+  <component name="VcsManagerConfiguration">
+    <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="true" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <breakpoint enabled="true" type="DotNet_Exception_Breakpoints">
+          <properties exception="System.OperationCanceledException" breakIfHandledByOtherCode="false" displayValue="System.OperationCanceledException" />
+          <option name="timeStamp" value="1" />
+        </breakpoint>
+        <breakpoint enabled="true" type="DotNet_Exception_Breakpoints">
+          <properties exception="System.Threading.Tasks.TaskCanceledException" breakIfHandledByOtherCode="false" displayValue="System.Threading.Tasks.TaskCanceledException" />
+          <option name="timeStamp" value="2" />
+        </breakpoint>
+        <breakpoint enabled="true" type="DotNet_Exception_Breakpoints">
+          <properties exception="System.Threading.ThreadAbortException" breakIfHandledByOtherCode="false" displayValue="System.Threading.ThreadAbortException" />
+          <option name="timeStamp" value="3" />
+        </breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
+  </component>
+  <component name="XSLT-Support.FileAssociations.UIState">
+    <expand />
+    <select />
+  </component>
+</project>
