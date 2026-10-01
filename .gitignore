@@ -70,3 +70,7 @@ Testing/
 
 # Rider project settings
 .idea/
+
+# bin and obj folders
+**/bin/
+**/obj/
