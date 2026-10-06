@@ -61,7 +61,11 @@ def parse_size(size: str):
 @app.post("/v1/images/generations", response_model=ImageGenerationResponse)
 async def generate_images(req: ImageGenerationRequest):
     width, height = parse_size(req.size)
-    generator = torch.Generator(device=DEVICE).manual_seed(req.seed) if req.seed is not None else None
+    generator = (
+        None
+        if req.seed is None or req.seed == -1
+        else torch.Generator(device=DEVICE).manual_seed(req.seed)
+    )
     try:
         result = pipe(
             prompt=req.prompt,
