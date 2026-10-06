@@ -176,8 +176,8 @@ $response = Invoke-RestMethod -Uri "http://localhost:8000/v1/images/generations"
     -Method Post -ContentType "application/json" -Body $body -TimeoutSec 600
 
 $bytes = [Convert]::FromBase64String($response.data[0].b64_json)
-[IO.File]::WriteAllBytes("$PWD\generated.png", $bytes)
-Write-Host "Saved: $PWD\generated.png"
+[IO.File]::WriteAllBytes("$PWD\generated.jpg", $bytes)
+Write-Host "Saved: $PWD\generated.jpg"
 ```
 
 **Linux / macOS (curl + jq):**
@@ -186,10 +186,10 @@ Write-Host "Saved: $PWD\generated.png"
 curl -s http://localhost:8000/v1/images/generations \
   -H "Content-Type: application/json" \
   -d '{"prompt":"apple","negative_prompt":"","size":"1024x1024","n":1,"num_inference_steps":30,"guidance_scale":7.0,"seed":-1}' \
-  | jq -r '.data[0].b64_json' | base64 -d > generated.png
+  | jq -r '.data[0].b64_json' | base64 -d > generated.jpg
 ```
 
-The image is saved as `generated.png` in your current folder. 🎉
+The image is saved as `generated.jpg` in your current folder. 🎉
 
 ### Request parameters
 
