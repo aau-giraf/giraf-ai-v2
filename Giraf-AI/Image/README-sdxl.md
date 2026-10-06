@@ -1,6 +1,6 @@
-# 🎨 Stable Diffusion 3.5 Turbo: Docker API
+# 🎨 Stable Diffusion XL Base 1.0: Docker API
 
-Run **Stable Diffusion 3.5 Large Turbo** locally in a Docker container and generate images through a simple REST API.
+Run **Stable Diffusion XL Base 1.0** locally in a Docker container and generate images through a simple REST API. It runs in half precision (fp16) with CPU offloading, so it works on GPUs with **6GB+ of VRAM** (8GB+ recommended for speed).
 
 ---
 
@@ -8,7 +8,7 @@ Run **Stable Diffusion 3.5 Large Turbo** locally in a Docker container and gener
 
 - [x] Windows or Linux
 - [x] [Docker](https://docs.docker.com/get-docker/) installed (with GPU support)
-- [x] A [Hugging Face](https://huggingface.co/) account that has **accepted the model's terms** on the [model page](https://huggingface.co/stabilityai/stable-diffusion-3.5-large-turbo)
+- [x] A [Hugging Face](https://huggingface.co/) account that has **accepted the model's terms** on the [model page](https://huggingface.co/stabilityai/stable-diffusion-xl-base-1.0)
 
 ---
 
@@ -52,11 +52,11 @@ hf auth login
 ### 4. Download the model
 
 ```bash
-python -c "from huggingface_hub import snapshot_download; snapshot_download(repo_id='stabilityai/stable-diffusion-3.5-large-turbo', local_dir='stable-diffusion-3.5-large-turbo', local_dir_use_symlinks=False)"
+python -c "from huggingface_hub import snapshot_download; snapshot_download(repo_id='stabilityai/stable-diffusion-xl-base-1.0', local_dir='stable-diffusion-xl-base-1.0', local_dir_use_symlinks=False)"```
 ```
 
 > [!NOTE]
-> This downloads the model into a new folder called `stable-diffusion-3.5-large-turbo` inside your current folder.
+> This downloads the model into a new folder called `stable-diffusion-xl-base-1.0` inside your current folder.
 
 ---
 
@@ -67,7 +67,7 @@ Open a terminal and `cd` into the folder containing `app.py` and the `Dockerfile
 ### 1. Build the image
 
 ```bash
-docker build -t sd35-api .
+docker build -t sdxl-api .
 ```
 
 ### 2. Start the container
@@ -96,15 +96,15 @@ docker run --gpus all -p PORT:PORT \
 
 </details>
 
-**Example with `stable-diffusion-3.5-large-turbo`:**
+**Example with `stable-diffusion-xl-base-1.0`:**
 
 <details open>
 <summary><b>🪟 Windows (PowerShell)</b></summary>
 
 ```powershell
 docker run --gpus all -p 8000:8000 `
-    -v "C:\Users\ulrik\stable-diffusion-3.5-large-turbo:/models/stable-diffusion-3.5-large-turbo" `
-    sd35-api
+    -v "C:\Users\ulrik\stable-diffusion-xl-base-1.0:/models/stable-diffusion-xl-base-1.0" `
+    sdxl-api
 ```
 
 </details>
@@ -114,8 +114,8 @@ docker run --gpus all -p 8000:8000 `
 
 ```bash
 docker run --gpus all -p 8000:8000 \
-    -v "$HOME/stable-diffusion-3.5-large-turbo:/models/stable-diffusion-3.5-large-turbo" \
-    sd35-api
+    -v "$HOME/stable-diffusion-xl-base-1.0:/models/stable-diffusion-xl-base-1.0" \
+    sdxl-api
 ```
 
 </details>
@@ -165,15 +165,15 @@ Once the model is ready, send a test request.
 $body = @{
     prompt              = "apple"
     negative_prompt     = ""
-    size                = "512x512"
+    size                = "1024x1024"
     n                   = 1
-    num_inference_steps = 20
-    guidance_scale      = 6.0
+    num_inference_steps = 30
+    guidance_scale      = 7.0
     seed                = -1
 } | ConvertTo-Json
 
 $response = Invoke-RestMethod -Uri "http://localhost:8000/v1/images/generations" `
-    -Method Post -ContentType "application/json" -Body $body -TimeoutSec 300
+    -Method Post -ContentType "application/json" -Body $body -TimeoutSec 600
 
 $bytes = [Convert]::FromBase64String($response.data[0].b64_json)
 [IO.File]::WriteAllBytes("$PWD\generated.png", $bytes)
@@ -185,7 +185,7 @@ Write-Host "Saved: $PWD\generated.png"
 ```bash
 curl -s http://localhost:8000/v1/images/generations \
   -H "Content-Type: application/json" \
-  -d '{"prompt":"apple","negative_prompt":"","size":"512x512","n":1,"num_inference_steps":20,"guidance_scale":6.0,"seed":-1}' \
+  -d '{"prompt":"apple","negative_prompt":"","size":"1024x1024","n":1,"num_inference_steps":30,"guidance_scale":7.0,"seed":-1}' \
   | jq -r '.data[0].b64_json' | base64 -d > generated.png
 ```
 
@@ -193,12 +193,15 @@ The image is saved as `generated.png` in your current folder. 🎉
 
 ### Request parameters
 
-| Parameter             | Example   | Description                                  |
-| --------------------- | --------- | -------------------------------------------- |
-| `prompt`              | `"apple"` | What you want to generate                    |
-| `negative_prompt`     | `""`      | What the image should avoid                  |
-| `size`                | `512x512` | Output resolution                            |
-| `n`                   | `1`       | Number of images to generate                 |
-| `num_inference_steps` | `20`      | Denoising steps (more = slower, more detail) |
-| `guidance_scale`      | `6.0`     | How closely to follow the prompt             |
-| `seed`                | `-1`      | Random seed (`-1` = random each time)        |
+| Parameter             | Example     | Description                                  |
+| --------------------- | ----------- | -------------------------------------------- |
+| `prompt`              | `"apple"`   | What you want to generate                    |
+| `negative_prompt`     | `""`        | What the image should avoid                  |
+| `size`                | `1024x1024` | Output resolution                            |
+| `n`                   | `1`         | Number of images to generate                 |
+| `num_inference_steps` | `30`        | Denoising steps (more = slower, more detail) |
+| `guidance_scale`      | `7.0`       | How closely to follow the prompt             |
+| `seed`                | `-1`        | Random seed (`-1` = random each time)        |
+
+> [!TIP]
+> SDXL is trained for around 1024x1024 (or similar total pixel counts such as `896x1152` or `1152x896`). Lower resolutions like 512x512 give noticeably worse results. If you run out of VRAM, keep `n` at `1`, or in `app.py` replace `enable_model_cpu_offload()` with `enable_sequential_cpu_offload()`, which uses much less VRAM but is considerably slower.

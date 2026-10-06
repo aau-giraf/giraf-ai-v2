@@ -47,7 +47,7 @@ python3 -m pip install -U huggingface_hub
 ### 3. Log in to Hugging Face (optional)
 
 ```bash
-huggingface-cli login
+hf auth login
 ```
 
 ### 4. Download the model
@@ -57,7 +57,7 @@ python -c "from huggingface_hub import snapshot_download; snapshot_download(repo
 ```
 
 > [!NOTE]
-> This downloads only the **fp16** weights (about 2GB) into a new folder called `stable-diffusion-v1-5` inside your current folder.
+> This downloads the model into a new folder called `stable-diffusion-v1-5` inside your current folder.
 
 ---
 
