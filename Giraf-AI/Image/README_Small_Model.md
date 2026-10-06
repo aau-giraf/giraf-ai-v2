@@ -42,6 +42,9 @@ sudo apt install -y python3 python3-pip python3-venv
 python3 -m pip install -U huggingface_hub
 ```
 
+> [!NOTE]
+> You may have to restart the terminal to use python commands.
+
 </details>
 
 ### 3. Log in to Hugging Face (optional)
