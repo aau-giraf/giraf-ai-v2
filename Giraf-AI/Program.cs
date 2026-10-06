@@ -1,7 +1,11 @@
-﻿Console.WriteLine("Hello, World!");
+﻿var builder = WebApplication.CreateBuilder(args);
 
-Console.WriteLine("Yay I did stuff!"); // Yippee!!
+builder.Services.AddControllers();
 
-Console.WriteLine("I am doing mooooreee!");
+var app = builder.Build();
 
-Console.WriteLine("Additional edits");
+app.UseHttpsRedirection();
+
+app.MapControllers();
+
+app.Run();
