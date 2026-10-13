@@ -12,6 +12,8 @@ DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 DTYPE = torch.float16 if DEVICE == "cuda" else torch.float32
 DEFAULT_STEPS = int(os.getenv("DEFAULT_STEPS", "20"))
 DEFAULT_GUIDANCE = float(os.getenv("DEFAULT_GUIDANCE", "7.0"))
+CPU_OFFLOAD_MODE = os.getenv("CPU_OFFLOAD_MODE", "sequential").lower()
+MAX_IMAGE_SIZE = int(os.getenv("MAX_IMAGE_SIZE", "1024"))
 os.environ["HF_HUB_OFFLINE"] = "1"
 os.environ["TRANSFORMERS_OFFLINE"] = "1"
 
@@ -27,7 +29,27 @@ if not MODEL_ID:
 print(f"Loading {MODEL_ID} on {DEVICE}...")
 pipe = AutoPipelineForText2Image.from_pretrained(
     MODEL_ID, torch_dtype=DTYPE, local_files_only=True
-).to(DEVICE)
+)
+
+if DEVICE == "cuda":
+    if CPU_OFFLOAD_MODE == "sequential":
+        # Keep only the currently executing module on the GPU. This is slower,
+        # but keeps SD3.5 Large Turbo within GPUs with less than 20 GB VRAM.
+        pipe.enable_sequential_cpu_offload()
+    elif CPU_OFFLOAD_MODE == "model":
+        pipe.enable_model_cpu_offload()
+    elif CPU_OFFLOAD_MODE == "none":
+        pipe.to(DEVICE)
+    else:
+        raise RuntimeError(
+            "CPU_OFFLOAD_MODE must be one of: sequential, model, none"
+        )
+
+    pipe.enable_attention_slicing("max")
+    pipe.enable_vae_slicing()
+    pipe.enable_vae_tiling()
+else:
+    pipe.to(DEVICE)
 print("Model ready.")
 
 
@@ -61,27 +83,41 @@ def parse_size(size: str):
 @app.post("/v1/images/generations", response_model=ImageGenerationResponse)
 async def generate_images(req: ImageGenerationRequest):
     width, height = parse_size(req.size)
+    if width > MAX_IMAGE_SIZE or height > MAX_IMAGE_SIZE:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Image dimensions must be at most {MAX_IMAGE_SIZE}x{MAX_IMAGE_SIZE}",
+        )
     generator = (
         None
         if req.seed is None or req.seed == -1
         else torch.Generator(device=DEVICE).manual_seed(req.seed)
     )
     try:
-        result = pipe(
-            prompt=req.prompt,
-            negative_prompt=req.negative_prompt,
-            num_inference_steps=req.num_inference_steps or DEFAULT_STEPS,
-            guidance_scale=req.guidance_scale if req.guidance_scale is not None else DEFAULT_GUIDANCE,
-            width=width,
-            height=height,
-            num_images_per_prompt=req.n,
-            generator=generator,
-        )
+        images = []
+        # Generate requests one at a time. A batch of four 1024px images can
+        # exceed the memory budget even when a single image fits comfortably.
+        with torch.inference_mode():
+            for _ in range(req.n):
+                result = pipe(
+                    prompt=req.prompt,
+                    negative_prompt=req.negative_prompt,
+                    num_inference_steps=req.num_inference_steps or DEFAULT_STEPS,
+                    guidance_scale=req.guidance_scale if req.guidance_scale is not None else DEFAULT_GUIDANCE,
+                    width=width,
+                    height=height,
+                    num_images_per_prompt=1,
+                    generator=generator,
+                )
+                images.append(result.images[0])
+                if DEVICE == "cuda":
+                    del result
+                    torch.cuda.empty_cache()
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
     data = []
-    for img in result.images:
+    for img in images:
         buf = io.BytesIO()
         img.save(buf, format="PNG")
         data.append(ImageData(b64_json=base64.b64encode(buf.getvalue()).decode()))

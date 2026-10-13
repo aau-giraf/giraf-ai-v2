@@ -56,7 +56,7 @@ hf auth login
 ### 4. Download the model
 
 ```bash
-python -c "from huggingface_hub import snapshot_download; snapshot_download(repo_id='stabilityai/stable-diffusion-3.5-large-turbo', local_dir='stable-diffusion-3.5-large-turbo', local_dir_use_symlinks=False)"
+python -c "from huggingface_hub import snapshot_download; snapshot_download(repo_id='stabilityai/stable-diffusion-3.5-large-turbo', local_dir='stable-diffusion-3.5-large-turbo')"
 ```
 
 > [!NOTE]
@@ -129,6 +129,19 @@ Wait until the logs say:
 ```text
 Model ready.
 ```
+
+The container enables sequential CPU offload by default. This keeps the
+pipeline's peak GPU allocation suitable for GPUs with less than 20 GB of VRAM,
+at the cost of slower generation. The API also generates `n` images
+sequentially instead of creating a batch, preventing the request size from
+multiplying the peak VRAM requirement. VAE tiling/slicing, attention slicing,
+and the CUDA allocator's expandable segments are enabled automatically.
+Requests are limited to 1024x1024 per image by default; increase `MAX_IMAGE_SIZE`
+only if the available VRAM has been tested with the larger resolution.
+
+For a GPU with more available VRAM, `CPU_OFFLOAD_MODE=model` is a faster
+alternative. Do not use `CPU_OFFLOAD_MODE=none` unless the complete pipeline
+fits in VRAM.
 
 ---
 
