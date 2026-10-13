@@ -9,9 +9,9 @@ app = FastAPI(title="Minimal Diffusers API")
 
 MODELS_DIR = os.getenv("MODELS_DIR", "/models")
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
-DTYPE = torch.float16 if DEVICE == "cuda" else torch.float32
-DEFAULT_STEPS = int(os.getenv("DEFAULT_STEPS", "20"))
-DEFAULT_GUIDANCE = float(os.getenv("DEFAULT_GUIDANCE", "7.0"))
+DTYPE = torch.bfloat16 if DEVICE == "cuda" else torch.float32
+DEFAULT_STEPS = int(os.getenv("DEFAULT_STEPS", "4"))
+DEFAULT_GUIDANCE = float(os.getenv("DEFAULT_GUIDANCE", "0.0"))
 CPU_OFFLOAD_MODE = os.getenv("CPU_OFFLOAD_MODE", "sequential").lower()
 MAX_IMAGE_SIZE = int(os.getenv("MAX_IMAGE_SIZE", "1024"))
 os.environ["HF_HUB_OFFLINE"] = "1"
@@ -28,7 +28,7 @@ if not MODEL_ID:
 
 print(f"Loading {MODEL_ID} on {DEVICE}...")
 pipe = AutoPipelineForText2Image.from_pretrained(
-    MODEL_ID, torch_dtype=DTYPE, local_files_only=True
+    MODEL_ID, dtype=DTYPE, local_files_only=True
 )
 
 if DEVICE == "cuda":
@@ -45,13 +45,11 @@ if DEVICE == "cuda":
             "CPU_OFFLOAD_MODE must be one of: sequential, model, none"
         )
 
-    pipe.enable_attention_slicing("max")
-    pipe.enable_vae_slicing()
-    pipe.enable_vae_tiling()
+    pipe.vae.enable_slicing()
+    pipe.vae.enable_tiling()
 else:
     pipe.to(DEVICE)
 print("Model ready.")
-
 
 class ImageGenerationRequest(BaseModel):
     prompt: str
@@ -62,15 +60,12 @@ class ImageGenerationRequest(BaseModel):
     guidance_scale: Optional[float] = None
     seed: Optional[int] = None
 
-
 class ImageData(BaseModel):
     b64_json: str
-
 
 class ImageGenerationResponse(BaseModel):
     created: int
     data: List[ImageData]
-
 
 def parse_size(size: str):
     try:
@@ -78,7 +73,6 @@ def parse_size(size: str):
         return max(256, (w // 8) * 8), max(256, (h // 8) * 8)
     except Exception:
         return 1024, 1024 # If the size in in the wrong format return default 1024x1024
-
 
 @app.post("/v1/images/generations", response_model=ImageGenerationResponse)
 async def generate_images(req: ImageGenerationRequest):
@@ -123,11 +117,9 @@ async def generate_images(req: ImageGenerationRequest):
         data.append(ImageData(b64_json=base64.b64encode(buf.getvalue()).decode()))
     return ImageGenerationResponse(created=int(time.time()), data=data)
 
-
 @app.get("/health")
 def health():
     return {"status": "ok", "model": MODEL_ID, "device": DEVICE}
-
 
 @app.get("/v1/models")
 def list_models():
