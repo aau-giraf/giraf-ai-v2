@@ -56,7 +56,7 @@ hf auth login
 ### 4. Download the model
 
 ```bash
-python -c "from huggingface_hub import snapshot_download; snapshot_download(repo_id='stabilityai/stable-diffusion-3.5-large-turbo', local_dir='stable-diffusion-3.5-large-turbo')"
+python3 -c "from huggingface_hub import snapshot_download; snapshot_download(repo_id='stabilityai/stable-diffusion-3.5-large-turbo', local_dir='stable-diffusion-3.5-large-turbo')"
 ```
 
 > [!NOTE]
@@ -93,7 +93,7 @@ docker run --gpus all -p PORT:PORT `
 <summary><b>🐧 Linux</b></summary>
 
 ```bash
-docker run --gpus all -p PORT:PORT \
+sudo docker run --gpus all -p PORT:PORT \
     -v "/path/to/model/folder:/models/MODEL_NAME_HERE" \
     name-of-image
 ```
@@ -117,7 +117,7 @@ docker run --gpus all -p 8000:8000 `
 <summary><b>🐧 Linux</b></summary>
 
 ```bash
-docker run --gpus all -p 8000:8000 \
+sudo docker run --gpus all -p 8000:8000 \
     -v "$HOME/stable-diffusion-3.5-large-turbo:/models/stable-diffusion-3.5-large-turbo" \
     sd35-api
 ```
