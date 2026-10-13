@@ -1,8 +1,13 @@
-﻿var builder = WebApplication.CreateBuilder(args);
+﻿using DefaultNamespace;
+
+var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
+builder.Services.AddScoped<ImageService>();
 
 builder.Services.AddOpenApi();
+
+builder.Services.AddAiClients();
 
 var app = builder.Build();
 

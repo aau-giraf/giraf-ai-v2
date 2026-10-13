@@ -2,39 +2,34 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace DefaultNamespace;
 
+/// <summary>
+/// API controller responsible for handling image generation requests.
+/// </summary>
 [ApiController]
 [Route("api/image-generation")]
 public class ImageGenerationController : ControllerBase
 {
+    private readonly ImageService imageService;
+     
+         public ImageGenerationController(ImageService imageService)
+         {
+             this.imageService = imageService;
+         }
+
+    /// <summary>
+    /// Recevies the image generation request and returns the generated result
+    /// </summary>
+    /// <param name="request">Includes the user-provided image generation parameters (prompt)</param>
+    /// <returns>
+    /// The generated image data (base64) and temporary title information
+    /// This return will be updated once LLM title generatoin and server image storing are implemented
+    /// </returns>
     [HttpPost]
-    public async Task<IActionResult> GenerateImageV2([FromBody] ImageClass.ImageGenerateRequest request)
+    public async Task<IActionResult> GenerateImage(
+        [FromBody] GenerateImageRequest request)
     {
-        Task<string> imageTask = GenerateImageFile(request.Prompt, request.ImagePreferences);
-        Task<ImageClass.ImageText> textTask = GenerateImageText(request.Prompt);
-        
-        await Task.WhenAll(imageTask, textTask);
+        var result = await this.imageService.GenerateImageAsync(request);
 
-        return Ok(new ImageClass.ImageGenerateResponse
-        {
-            Path = await imageTask,
-            ImageText = await textTask
-        });
+        return Ok(result);
     }
-
-    public async Task<string> GenerateImageFile(string prompt, UserPreferencesClass.ImagePreferences imagePreferences)
-    {
-        return "";
-    }
-    
-    public async Task<ImageClass.ImageText> GenerateImageText(string prompt)
-    {
-        return new ImageClass.ImageText
-        {
-            TitleDa = prompt,
-            TitleEn = prompt,
-            AltTextDa = prompt,
-            AltTextEn = prompt
-        };
-    }
-
 }
