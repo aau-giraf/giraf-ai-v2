@@ -1,4 +1,4 @@
-# 🎨 Stable Diffusion 3.5 Turbo: Docker API
+# 🎨 Stable Diffusion 3.5 Large Turbo: Docker API
 
 Run **Stable Diffusion 3.5 Large Turbo** locally in a Docker container and generate images through a simple REST API.
 
