@@ -1,7 +1,16 @@
-﻿Console.WriteLine("Hello, World!");
+using Giraf_AI.Configuration;
+using Giraf_AI.Services;
 
-Console.WriteLine("Yay I did stuff!"); // Yippee!!
+var builder = WebApplication.CreateBuilder(args);
 
-Console.WriteLine("I am doing mooooreee!");
+builder.Services.AddControllers();
+builder.Services.AddScoped<ImageService>();
+builder.Services.AddOpenApi();
+builder.Services.AddAiClients();
 
-Console.WriteLine("Additional edits");
+var app = builder.Build();
+
+app.MapOpenApi();
+app.UseHttpsRedirection();
+app.MapControllers();
+app.Run();
