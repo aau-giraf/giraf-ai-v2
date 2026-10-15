@@ -1,12 +1,12 @@
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
-namespace DefaultNamespace;
+namespace Giraf_AI.Classes;
 
 /// <summary>
 /// Contains the parameters sent to the image‑generation model container.
 /// </summary>
-public class ImageGenerationProviderRequest
+public class ImageProviderRequest
 {
     [Required]
     [JsonPropertyName("prompt")]
@@ -22,5 +22,5 @@ public class ImageGenerationProviderRequest
     [JsonPropertyName("guidance_scale")]
     public double GuidanceScale { get; init; }
     [JsonPropertyName("seed")]
-    public int Seed { get; init; }    
+    public int Seed { get; init; }
 }

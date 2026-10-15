@@ -1,14 +1,11 @@
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.AspNetCore.Mvc;
-
-namespace DefaultNamespace;
+namespace Giraf_AI.Configuration;
 
 /// <summary>
 /// Registers the HTTP clients used for communicating with the AI-model containers
 /// </summary>
 public static class AiClientConfiguration
 {
-    public static IServiceCollection AddAiClients(this IServiceCollection services)
+    public static void AddAiClients(this IServiceCollection services)
     {
         // Configure default setting for all instances of Httpclient
         services.ConfigureHttpClientDefaults(http =>
@@ -28,12 +25,10 @@ public static class AiClientConfiguration
         {
             client.BaseAddress = new Uri("https://localhost:/");
         });*/
-        
+
         /*services.AddHttpClient("PromptFilter", client =>
         {
             client.BaseAddress = new Uri("https://localhost:/");
         });*/
-
-        return services;
     }
 }

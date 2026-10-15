@@ -1,10 +1,10 @@
-namespace DefaultNamespace;
+namespace Giraf_AI.Classes;
 
 /// <summary>
 /// Represents the result of an image generation request, including file paths and image text
 /// </summary>
-public class GenerateImageResponse
+public class ImageResponse
 {
     public required List<string> Path { get; init; } = new();
-    public GenerateImageText ImageText { get; init; } = new();
+    public ImageText ImageText { get; init; } = new();
 }
