@@ -8,11 +8,11 @@ This guide explains how to:
 4. Send HTTP requests to the LLM
 5. Get only the generated response
 
-## Requirements
+## Prerequisites
 
 * Windows 10/11
 * [Docker Desktop](https://www.docker.com/products/docker-desktop/)
-* An NVIDIA GPU
+* A NVIDIA GPU
 
 ---
 
