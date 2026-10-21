@@ -1,6 +1,6 @@
-# 🎨 Stable Diffusion 1.5: Docker API (4GB GPU)
+# 🎨 Qwen-Image-2.1-Turbo: Docker API
 
-Run **Stable Diffusion 1.5** locally in a Docker container and generate images through a simple REST API. It runs in half precision (fp16), so it fits on a GPU with **4GB of VRAM**.
+Run **Qwen-Image-2.1-Turbo** locally in a Docker container and generate images through a simple REST API.
 
 ---
 
@@ -8,8 +8,7 @@ Run **Stable Diffusion 1.5** locally in a Docker container and generate images t
 
 - [x] Windows or Linux
 - [x] [Docker](https://docs.docker.com/get-docker/) installed (with GPU support)
-- [x] An NVIDIA GPU with **4GB+ VRAM**
-- [x] A [Hugging Face](https://huggingface.co/) account (optional: the model is public, but logging in avoids rate limits)
+- [x] A [Hugging Face](https://huggingface.co/) account with access to the [Qwen-Image-2.1-Turbo model](https://huggingface.co/Qwen/Qwen-Image-2.1-Turbo)
 
 ---
 
@@ -45,9 +44,10 @@ python3 -m pip install -U huggingface_hub
 > [!NOTE]
 > You may have to restart the terminal to use python commands.
 
+
 </details>
 
-### 3. Log in to Hugging Face (optional)
+### 3. Log in to Hugging Face
 
 ```bash
 hf auth login
@@ -56,11 +56,11 @@ hf auth login
 ### 4. Download the model
 
 ```bash
-python -c "from huggingface_hub import snapshot_download; snapshot_download(repo_id='stable-diffusion-v1-5/stable-diffusion-v1-5', local_dir='stable-diffusion-v1-5', local_dir_use_symlinks=False, allow_patterns=['model_index.json', '*/*.json', '*/*.txt', '*.fp16.safetensors'])"
+python3 -c "from huggingface_hub import snapshot_download; snapshot_download(repo_id='Qwen/Qwen-Image-2.1-Turbo', local_dir='qwen-image-2.1-turbo')"
 ```
 
 > [!NOTE]
-> This downloads the model into a new folder called `stable-diffusion-v1-5` inside your current folder.
+> This downloads the model into a new folder called `qwen-image-2.1-turbo` inside your current folder.
 
 ---
 
@@ -68,23 +68,10 @@ python -c "from huggingface_hub import snapshot_download; snapshot_download(repo
 
 Open a terminal and `cd` into the folder containing `app.py` and the `Dockerfile`.
 
-> [!IMPORTANT]
-> Your `app.py` must load the model with low-VRAM settings, otherwise it can run out of memory on 3GB:
->
-> ```python
-> pipe = StableDiffusionPipeline.from_pretrained(
->     "/models/stable-diffusion-v1-5",
->     torch_dtype=torch.float16,
->     variant="fp16",
-> ).to("cuda")
-> pipe.enable_attention_slicing()
-> pipe.enable_vae_slicing()
-> ```
-
 ### 1. Build the image
 
 ```bash
-docker build -t sd15-api .
+docker build -t qwen-image-21-turbo-api .
 ```
 
 ### 2. Start the container
@@ -106,22 +93,22 @@ docker run --gpus all -p PORT:PORT `
 <summary><b>🐧 Linux</b></summary>
 
 ```bash
-docker run --gpus all -p PORT:PORT \
+sudo docker run --gpus all -p PORT:PORT \
     -v "/path/to/model/folder:/models/MODEL_NAME_HERE" \
     name-of-image
 ```
 
 </details>
 
-**Example with `stable-diffusion-v1-5`:**
+**Example with `qwen-image-2.1-turbo`:**
 
 <details open>
 <summary><b>🪟 Windows (PowerShell)</b></summary>
 
 ```powershell
 docker run --gpus all -p 8000:8000 `
-    -v "C:\Users\ulrik\stable-diffusion-v1-5:/models/stable-diffusion-v1-5" `
-    sd15-api
+    -v "C:\Users\ulrik\qwen-image-2.1-turbo:/models/qwen-image-2.1-turbo" `
+    qwen-image-21-turbo-api
 ```
 
 </details>
@@ -130,9 +117,9 @@ docker run --gpus all -p 8000:8000 `
 <summary><b>🐧 Linux</b></summary>
 
 ```bash
-docker run --gpus all -p 8000:8000 \
-    -v "$HOME/stable-diffusion-v1-5:/models/stable-diffusion-v1-5" \
-    sd15-api
+sudo docker run --gpus all -p 8000:8000 \
+    -v "$HOME/qwen-image-2.1-turbo:/models/qwen-image-2.1-turbo" \
+    qwen-image-21-turbo-api
 ```
 
 </details>
@@ -142,6 +129,20 @@ Wait until the logs say:
 ```text
 Model ready.
 ```
+
+The container enables sequential CPU offload by default. This keeps the
+pipeline's peak GPU allocation suitable for GPUs with less than 20 GB of VRAM,
+at the cost of slower generation. The API also generates `n` images
+sequentially instead of creating a batch, preventing the request size from
+multiplying the peak VRAM requirement. VAE tiling/slicing, attention slicing,
+and the CUDA allocator's expandable segments are enabled automatically.
+Qwen-Image-2.1-Turbo uses its built-in 8-step sampling schedule by default.
+Requests are limited to 1024x1024 per image by default; increase `MAX_IMAGE_SIZE`
+only if the available VRAM has been tested with the larger resolution.
+
+For a GPU with more available VRAM, `CPU_OFFLOAD_MODE=model` is a faster
+alternative. Do not use `CPU_OFFLOAD_MODE=none` unless the complete pipeline
+fits in VRAM.
 
 ---
 
@@ -184,8 +185,8 @@ $body = @{
     negative_prompt     = ""
     size                = "512x512"
     n                   = 1
-    num_inference_steps = 20
-    guidance_scale      = 7.5
+    num_inference_steps = 8
+    guidance_scale      = 1.0
     seed                = -1
 } | ConvertTo-Json
 
@@ -193,8 +194,8 @@ $response = Invoke-RestMethod -Uri "http://localhost:8000/v1/images/generations"
     -Method Post -ContentType "application/json" -Body $body -TimeoutSec 300
 
 $bytes = [Convert]::FromBase64String($response.data[0].b64_json)
-[IO.File]::WriteAllBytes("$PWD\generated.jpg", $bytes)
-Write-Host "Saved: $PWD\generated.jpg"
+[IO.File]::WriteAllBytes("$PWD\generated.png", $bytes)
+Write-Host "Saved: $PWD\generated.png"
 ```
 
 **Linux / macOS (curl + jq):**
@@ -202,11 +203,11 @@ Write-Host "Saved: $PWD\generated.jpg"
 ```bash
 curl -s http://localhost:8000/v1/images/generations \
   -H "Content-Type: application/json" \
-  -d '{"prompt":"apple","negative_prompt":"","size":"512x512","n":1,"num_inference_steps":20,"guidance_scale":7.5,"seed":-1}' \
-  | jq -r '.data[0].b64_json' | base64 -d > generated.jpg
+  -d '{"prompt":"apple","negative_prompt":"","size":"512x512","n":1,"num_inference_steps":8,"guidance_scale":1.0,"seed":-1}' \
+  | jq -r '.data[0].b64_json' | base64 -d > generated.png
 ```
 
-The image is saved as `generated.jpg` in your current folder. 🎉
+The image is saved as `generated.png` in your current folder. 🎉
 
 ### Request parameters
 
@@ -216,9 +217,6 @@ The image is saved as `generated.jpg` in your current folder. 🎉
 | `negative_prompt`     | `""`      | What the image should avoid                  |
 | `size`                | `512x512` | Output resolution                            |
 | `n`                   | `1`       | Number of images to generate                 |
-| `num_inference_steps` | `20`      | Denoising steps (more = slower, more detail) |
-| `guidance_scale`      | `7.5`     | How closely to follow the prompt             |
+| `num_inference_steps` | `8`       | Denoising steps (the Turbo checkpoint is designed for 8 steps) |
+| `guidance_scale`      | `1.0`     | Classifier-free guidance strength (`true_cfg_scale` in Qwen's pipeline) |
 | `seed`                | `-1`      | Random seed (`-1` = random each time)        |
-
-> [!TIP]
-> On 3GB, stick to `512x512` (or up to about `512x768`) and keep `n` at `1`. Larger sizes or batches can cause out-of-memory errors.

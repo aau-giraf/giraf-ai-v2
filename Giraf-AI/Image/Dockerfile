@@ -4,14 +4,14 @@ ENV DEBIAN_FRONTEND=noninteractive
 ENV PYTHONUNBUFFERED=1
 ENV HF_HUB_OFFLINE=1
 ENV TRANSFORMERS_OFFLINE=1
-# SD3.5 Large Turbo is loaded with sequential CPU offload by default. This
+# Qwen-Image-2.1-Turbo is loaded with sequential CPU offload by default. This
 # allocator setting also reduces fragmentation during repeated generations.
 ENV CPU_OFFLOAD_MODE=sequential
 ENV PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
 ENV MAX_IMAGE_SIZE=1024
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    python3 python3-pip \
+    git python3 python3-pip \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app

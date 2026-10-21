@@ -3,15 +3,15 @@ from typing import Optional, List
 import torch
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, Field
-from diffusers import AutoPipelineForText2Image
+from diffusers import QwenImage21Pipeline
 
 app = FastAPI(title="Minimal Diffusers API")
 
 MODELS_DIR = os.getenv("MODELS_DIR", "/models")
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 DTYPE = torch.bfloat16 if DEVICE == "cuda" else torch.float32
-DEFAULT_STEPS = int(os.getenv("DEFAULT_STEPS", "4"))
-DEFAULT_GUIDANCE = float(os.getenv("DEFAULT_GUIDANCE", "0.0"))
+DEFAULT_STEPS = int(os.getenv("DEFAULT_STEPS", "8"))
+DEFAULT_GUIDANCE = float(os.getenv("DEFAULT_GUIDANCE", "1.0"))
 CPU_OFFLOAD_MODE = os.getenv("CPU_OFFLOAD_MODE", "sequential").lower()
 MAX_IMAGE_SIZE = int(os.getenv("MAX_IMAGE_SIZE", "1024"))
 os.environ["HF_HUB_OFFLINE"] = "1"
@@ -27,14 +27,14 @@ if not MODEL_ID:
     raise RuntimeError(f"No Diffusers model found in {MODELS_DIR}")
 
 print(f"Loading {MODEL_ID} on {DEVICE}...")
-pipe = AutoPipelineForText2Image.from_pretrained(
+pipe = QwenImage21Pipeline.from_pretrained(
     MODEL_ID, dtype=DTYPE, local_files_only=True
 )
 
 if DEVICE == "cuda":
     if CPU_OFFLOAD_MODE == "sequential":
         # Keep only the currently executing module on the GPU. This is slower,
-        # but keeps SD3.5 Large Turbo within GPUs with less than 20 GB VRAM.
+        # but keeps Qwen-Image-2.1-Turbo within GPUs with less than 20 GB VRAM.
         pipe.enable_sequential_cpu_offload()
     elif CPU_OFFLOAD_MODE == "model":
         pipe.enable_model_cpu_offload()
@@ -95,9 +95,13 @@ async def generate_images(req: ImageGenerationRequest):
             for _ in range(req.n):
                 result = pipe(
                     prompt=req.prompt,
-                    negative_prompt=req.negative_prompt,
+                    negative_prompt=req.negative_prompt or " ",
                     num_inference_steps=req.num_inference_steps or DEFAULT_STEPS,
-                    guidance_scale=req.guidance_scale if req.guidance_scale is not None else DEFAULT_GUIDANCE,
+                    true_cfg_scale=(
+                        req.guidance_scale
+                        if req.guidance_scale is not None
+                        else DEFAULT_GUIDANCE
+                    ),
                     width=width,
                     height=height,
                     num_images_per_prompt=1,
