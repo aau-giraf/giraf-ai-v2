@@ -7,7 +7,8 @@ from diffusers import QwenImage21Pipeline
 
 app = FastAPI(title="Minimal Diffusers API")
 
-MODELS_DIR = os.getenv("MODELS_DIR", "/models")
+MODEL_NAME = "Qwen/Qwen-Image-2.1-Turbo"
+MODEL_PATH = "/models/qwen-image-2.1-turbo"
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 DTYPE = torch.bfloat16 if DEVICE == "cuda" else torch.float32
 DEFAULT_STEPS = int(os.getenv("DEFAULT_STEPS", "8"))
@@ -17,18 +18,9 @@ MAX_IMAGE_SIZE = int(os.getenv("MAX_IMAGE_SIZE", "1024"))
 os.environ["HF_HUB_OFFLINE"] = "1"
 os.environ["TRANSFORMERS_OFFLINE"] = "1"
 
-# Auto-detect the single model folder
-MODEL_ID = next(
-    (os.path.join(MODELS_DIR, n) for n in os.listdir(MODELS_DIR)
-     if os.path.isfile(os.path.join(MODELS_DIR, n, "model_index.json"))),
-    None,
-)
-if not MODEL_ID:
-    raise RuntimeError(f"No Diffusers model found in {MODELS_DIR}")
-
-print(f"Loading {MODEL_ID} on {DEVICE}...")
+print(f"Loading {MODEL_NAME} from {MODEL_PATH} on {DEVICE}...")
 pipe = QwenImage21Pipeline.from_pretrained(
-    MODEL_ID, dtype=DTYPE, local_files_only=True
+    MODEL_PATH, dtype=DTYPE, local_files_only=True
 )
 
 if DEVICE == "cuda":
@@ -123,8 +115,8 @@ async def generate_images(req: ImageGenerationRequest):
 
 @app.get("/health")
 def health():
-    return {"status": "ok", "model": MODEL_ID, "device": DEVICE}
+    return {"status": "ok", "model": MODEL_NAME, "device": DEVICE}
 
 @app.get("/v1/models")
 def list_models():
-    return {"object": "list", "data": [{"id": MODEL_ID, "object": "model", "owned_by": "local"}]}
+    return {"object": "list", "data": [{"id": MODEL_NAME, "object": "model", "owned_by": "local"}]}
