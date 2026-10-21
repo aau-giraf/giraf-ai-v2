@@ -27,7 +27,7 @@ Skip this step if both are already installed.
 
 ```powershell
 winget install Python.Python.3.12
-python -m pip install -U huggingface_hub
+py -3 -m pip install -U huggingface_hub
 ```
 
 </details>
@@ -55,12 +55,25 @@ hf auth login
 
 ### 4. Download the model
 
+**Windows (PowerShell):**
+
+```powershell
+py -3 -c "from huggingface_hub import snapshot_download; snapshot_download(repo_id='Qwen/Qwen-Image-2.1-Turbo', local_dir='qwen-image-2.1-turbo')"
+if (-not (Test-Path ".\qwen-image-2.1-turbo\model_index.json")) {
+    throw "Model download is incomplete or the current directory is incorrect."
+}
+```
+
+**Linux / macOS:**
+
 ```bash
 python3 -c "from huggingface_hub import snapshot_download; snapshot_download(repo_id='Qwen/Qwen-Image-2.1-Turbo', local_dir='qwen-image-2.1-turbo')"
+test -f qwen-image-2.1-turbo/model_index.json || { echo "Model download is incomplete or the current directory is incorrect." >&2; exit 1; }
 ```
 
 > [!NOTE]
 > This downloads the model into a new folder called `qwen-image-2.1-turbo` inside your current folder.
+> Before starting Docker, verify that this folder contains `model_index.json`.
 
 ---
 
@@ -144,6 +157,45 @@ For a GPU with more available VRAM, `CPU_OFFLOAD_MODE=model` is a faster
 alternative. Do not use `CPU_OFFLOAD_MODE=none` unless the complete pipeline
 fits in VRAM.
 
+`CPU_OFFLOAD_MODE=group` is an intermediate option. It offloads groups of
+transformer blocks instead of individual layers, reducing transfer overhead
+while using less VRAM than model-level offload. `GROUP_BLOCKS_PER_GROUP`
+controls the trade-off; start with `2` and monitor `nvidia-smi`. The setting
+does not provide a hard 12 GB limit, because peak usage also depends on the
+pipeline and image dimensions.
+
+If a request reports a CUDA allocator assertion, restart the container before
+trying again; a failed CUDA allocation can leave the process unusable. The
+group-offload path does not call `torch.cuda.empty_cache()` between images
+because that can invalidate active offload allocations.
+
+```powershell
+docker run --gpus all -p 8000:8000 `
+    -e CPU_OFFLOAD_MODE=group `
+    -e GROUP_BLOCKS_PER_GROUP=2 `
+    -v "C:\Users\ulrik\qwen-image-2.1-turbo:/models/qwen-image-2.1-turbo" `
+    qwen-image-21-turbo-api
+```
+
+For an RTX 5080 (16 GB VRAM), keep the default sequential mode. If you
+previously started the container with `CPU_OFFLOAD_MODE=model`, stop and
+remove that container before starting it again:
+
+```powershell
+docker ps -a --filter "ancestor=qwen-image-21-turbo-api"
+docker stop <container-id>
+docker rm <container-id>
+docker run --gpus all -p 8000:8000 `
+    -e CPU_OFFLOAD_MODE=sequential `
+    -v "C:\Users\ulrik\qwen-image-2.1-turbo:/models/qwen-image-2.1-turbo" `
+    qwen-image-21-turbo-api
+```
+
+Close other GPU applications before generating. A 512x512 request still
+requires the model weights and denoising workspace in addition to the output
+resolution, so reducing the size alone does not guarantee that model-level
+offload will fit.
+
 ---
 
 ## 🩺 Check the container health
@@ -183,7 +235,7 @@ Once the model is ready, send a test request.
 $body = @{
     prompt              = "apple"
     negative_prompt     = ""
-    size                = "512x512"
+    size                = "1024x1024"
     n                   = 1
     num_inference_steps = 8
     guidance_scale      = 1.0
@@ -194,8 +246,8 @@ $response = Invoke-RestMethod -Uri "http://localhost:8000/v1/images/generations"
     -Method Post -ContentType "application/json" -Body $body -TimeoutSec 300
 
 $bytes = [Convert]::FromBase64String($response.data[0].b64_json)
-[IO.File]::WriteAllBytes("$PWD\generated.png", $bytes)
-Write-Host "Saved: $PWD\generated.png"
+[IO.File]::WriteAllBytes("$PWD\generated.jpg", $bytes)
+Write-Host "Saved: $PWD\generated.jpg"
 ```
 
 **Linux / macOS (curl + jq):**
@@ -204,10 +256,10 @@ Write-Host "Saved: $PWD\generated.png"
 curl -s http://localhost:8000/v1/images/generations \
   -H "Content-Type: application/json" \
   -d '{"prompt":"apple","negative_prompt":"","size":"512x512","n":1,"num_inference_steps":8,"guidance_scale":1.0,"seed":-1}' \
-  | jq -r '.data[0].b64_json' | base64 -d > generated.png
+  | jq -r '.data[0].b64_json' | base64 -d > generated.jpg
 ```
 
-The image is saved as `generated.png` in your current folder. 🎉
+The image is saved as `generated.jpg` in your current folder. 🎉
 
 ### Request parameters
 

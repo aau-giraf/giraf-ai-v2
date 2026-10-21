@@ -14,6 +14,7 @@ DTYPE = torch.bfloat16 if DEVICE == "cuda" else torch.float32
 DEFAULT_STEPS = int(os.getenv("DEFAULT_STEPS", "8"))
 DEFAULT_GUIDANCE = float(os.getenv("DEFAULT_GUIDANCE", "1.0"))
 CPU_OFFLOAD_MODE = os.getenv("CPU_OFFLOAD_MODE", "sequential").lower()
+GROUP_BLOCKS_PER_GROUP = int(os.getenv("GROUP_BLOCKS_PER_GROUP", "2"))
 MAX_IMAGE_SIZE = int(os.getenv("MAX_IMAGE_SIZE", "1024"))
 os.environ["HF_HUB_OFFLINE"] = "1"
 os.environ["TRANSFORMERS_OFFLINE"] = "1"
@@ -28,13 +29,24 @@ if DEVICE == "cuda":
         # Keep only the currently executing module on the GPU. This is slower,
         # but keeps Qwen-Image-2.1-Turbo within GPUs with less than 20 GB VRAM.
         pipe.enable_sequential_cpu_offload()
+    elif CPU_OFFLOAD_MODE == "group":
+        if GROUP_BLOCKS_PER_GROUP < 1:
+            raise RuntimeError("GROUP_BLOCKS_PER_GROUP must be at least 1")
+        # Group offload trades VRAM for fewer CPU/GPU transfers than sequential
+        # offload. The actual peak depends on the request and model components.
+        pipe.enable_group_offload(
+            onload_device=torch.device("cuda"),
+            offload_device=torch.device("cpu"),
+            offload_type="block_level",
+            num_blocks_per_group=GROUP_BLOCKS_PER_GROUP,
+        )
     elif CPU_OFFLOAD_MODE == "model":
         pipe.enable_model_cpu_offload()
     elif CPU_OFFLOAD_MODE == "none":
         pipe.to(DEVICE)
     else:
         raise RuntimeError(
-            "CPU_OFFLOAD_MODE must be one of: sequential, model, none"
+            "CPU_OFFLOAD_MODE must be one of: sequential, group, model, none"
         )
 
     pipe.vae.enable_slicing()
@@ -100,7 +112,7 @@ async def generate_images(req: ImageGenerationRequest):
                     generator=generator,
                 )
                 images.append(result.images[0])
-                if DEVICE == "cuda":
+                if DEVICE == "cuda" and CPU_OFFLOAD_MODE != "group":
                     del result
                     torch.cuda.empty_cache()
     except Exception as e:
