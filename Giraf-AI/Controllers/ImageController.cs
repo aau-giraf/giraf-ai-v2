@@ -14,15 +14,15 @@ public class ImageGenerationController(ImageService imageService) : ControllerBa
     /// <summary>
     /// Receives the image generation request and returns the generated result
     /// </summary>
-    /// <param name="request">Includes the user-provided image generation parameters (prompt)</param>
+    /// <param name="req">Includes the user-provided image generation parameters (prompt)</param>
     /// <returns>
     /// The generated image data (base64) and temporary title information
     /// This return will be updated once LLM title generation and server image storing are implemented
     /// </returns>
     [HttpPost]
-    public async Task<IActionResult> GenerateImage([FromBody] ImageRequest request)
+    public async Task<IActionResult> GenerateImage([FromBody] ImageReq request)
     {
-        var result = await imageService.GenerateImageAsync(request);
+        var result = await imageService.ProcessImageRequestAsync(request);
 
         return Ok(result);
     }

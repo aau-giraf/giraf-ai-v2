@@ -5,7 +5,7 @@ namespace Giraf_AI.Classes;
 /// <summary>
 /// Contains the user‑provided prompt used to request image generation
 /// </summary>
-public class ImageRequest
+public class ImageReq
 {
     [Required(ErrorMessage = "Prompt is required")]
     [MaxLength(100, ErrorMessage = "Prompt cannot exceed 100 characters")]

@@ -21,14 +21,19 @@ public static class AiClientConfiguration
             client.BaseAddress = new Uri("http://localhost:8000/");
         });
 
-        /*services.AddHttpClient("PromptCorrection", client =>
+        services.AddHttpClient("Translation", client =>
         {
             client.BaseAddress = new Uri("https://localhost:/");
-        });*/
+        });
 
-        /*services.AddHttpClient("PromptFilter", client =>
+        services.AddHttpClient("ContentFilter", client =>
         {
             client.BaseAddress = new Uri("https://localhost:/");
-        });*/
+        });
+        
+        services.AddHttpClient("Title", client =>
+        {
+            client.BaseAddress = new Uri("https://localhost:/");
+        });
     }
 }

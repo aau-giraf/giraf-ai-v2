@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace Giraf_AI.Classes;
+namespace Giraf_AI.Classes.ImageProvider;
 
 /// <summary>
 /// Contains a single generated image encoded as base64 JSON.

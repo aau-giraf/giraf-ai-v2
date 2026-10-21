@@ -1,12 +1,12 @@
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
-namespace Giraf_AI.Classes;
+namespace Giraf_AI.Classes.ImageProvider;
 
 /// <summary>
 /// Contains the parameters sent to the image‑generation model container.
 /// </summary>
-public class ImageProviderRequest
+public class ImageProviderReq
 {
     [Required]
     [JsonPropertyName("prompt")]
