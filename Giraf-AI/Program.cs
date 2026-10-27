@@ -1,7 +1,24 @@
-﻿Console.WriteLine("Hello, World!");
+using Giraf_AI.Configuration;
+using Giraf_AI.Services;
+using Giraf_AI.Services.AI;
+using Giraf_AI.Services.Queue;
 
-Console.WriteLine("Yay I did stuff!"); // Yippee!!
+var builder = WebApplication.CreateBuilder(args);
 
-Console.WriteLine("I am doing mooooreee!");
+builder.Services.AddControllers();
+builder.Services.AddSingleton<IQueueService, QueueService>();
+builder.Services.AddHostedService<QueueHostedService>();
+builder.Services.AddScoped<ImageService>();
+builder.Services.AddScoped<TranslationService>();
+builder.Services.AddScoped<ContentFilterService>();
+builder.Services.AddScoped<TitleService>();
+builder.Services.AddScoped<ImageGenService>();
+builder.Services.AddOpenApi();
+builder.Services.AddAiClients();
 
-Console.WriteLine("Additional edits");
+var app = builder.Build();
+
+app.MapOpenApi();
+app.UseHttpsRedirection();
+app.MapControllers();
+app.Run();
