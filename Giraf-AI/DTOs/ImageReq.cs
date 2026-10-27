@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace Giraf_AI.Classes;
+namespace Giraf_AI.DTOs;
 
 /// <summary>
 /// Contains the user‑provided prompt used to request image generation

@@ -1,7 +1,6 @@
 ﻿using System.Text;
 using System.Text.Json;
-using Giraf_AI.Classes;
-using Giraf_AI.Classes.ImageProvider;
+using Giraf_AI.DTOs.Providers.ImageProvider;
 
 namespace Giraf_AI.Services.AI;
 
@@ -14,7 +13,7 @@ public class ImageGenService
     
     private readonly HttpClient _imageGenerationClient;
     
-    public async Task<List<string>> GenerateImageBase64Async(string request)
+    public async Task<List<string>> GenerateImageData(string request)
     {
         var imageGenerateRequest = new ImageProviderReq
         {

@@ -1,11 +1,13 @@
 using Giraf_AI.Configuration;
 using Giraf_AI.Services;
 using Giraf_AI.Services.AI;
-using Microsoft.AspNetCore.Components.Web;
+using Giraf_AI.Services.Queue;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
+builder.Services.AddSingleton<IQueueService, QueueService>();
+builder.Services.AddHostedService<QueueHostedService>();
 builder.Services.AddScoped<ImageService>();
 builder.Services.AddScoped<TranslationService>();
 builder.Services.AddScoped<ContentFilterService>();

@@ -1,4 +1,6 @@
-namespace Giraf_AI.Classes;
+using Giraf_AI.Models;
+
+namespace Giraf_AI.DTOs;
 
 /// <summary>
 /// Represents the result of an image generation request, including file paths and image text

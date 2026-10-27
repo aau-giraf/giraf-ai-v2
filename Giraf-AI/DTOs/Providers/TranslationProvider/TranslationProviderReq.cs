@@ -1,4 +1,4 @@
-﻿namespace Giraf_AI.Classes.TranslationProvider;
+﻿namespace Giraf_AI.DTOs.Providers.TranslationProvider;
 
 public class TranslationProviderReq
 {

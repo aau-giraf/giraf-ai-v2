@@ -1,6 +1,6 @@
-﻿namespace Giraf_AI.Classes.FilterProvider;
+﻿namespace Giraf_AI.DTOs.Providers.FilterProvider;
 
-public class FilterProviderDataRes
+public class FilterProviderResult
 {
     public string IsAllowed { get; init; } = string.Empty;
     public string Safety { get; init; } = string.Empty;

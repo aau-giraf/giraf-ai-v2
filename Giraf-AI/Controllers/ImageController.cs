@@ -1,5 +1,6 @@
-using Giraf_AI.Classes;
-using Giraf_AI.Services;
+using Giraf_AI.DTOs;
+using Giraf_AI.Jobs;
+using Giraf_AI.Services.Queue;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Giraf_AI.Controllers;
@@ -9,21 +10,28 @@ namespace Giraf_AI.Controllers;
 /// </summary>
 [ApiController]
 [Route("api/image-generation")]
-public class ImageGenerationController(ImageService imageService) : ControllerBase
+public class ImageGenerationController(IQueueService queueService) : ControllerBase
 {
-    /// <summary>
-    /// Receives the image generation request and returns the generated result
-    /// </summary>
-    /// <param name="req">Includes the user-provided image generation parameters (prompt)</param>
-    /// <returns>
-    /// The generated image data (base64) and temporary title information
-    /// This return will be updated once LLM title generation and server image storing are implemented
-    /// </returns>
     [HttpPost]
-    public async Task<IActionResult> GenerateImage([FromBody] ImageReq request)
+    public async Task<IActionResult> GenerateImage([FromBody] ImageReq request, CancellationToken cancellationToken)
     {
-        var result = await imageService.ProcessImageRequestAsync(request);
+		var job = new ImageJob {
+			Request = request
+		};
+		
+        try
+        {
+            await queueService.AddToQueue(job, cancellationToken);
+            ImageRes result = await job.Completion.Task.WaitAsync(cancellationToken);
+            return Ok(result);
+        }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            return new EmptyResult();
+        }
 
-        return Ok(result);
+        //var result = await imageService.ProcessImageRequestAsync(request);
+
+        //return Ok(result);
     }
 }

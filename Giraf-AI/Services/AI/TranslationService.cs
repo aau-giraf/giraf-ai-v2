@@ -1,5 +1,4 @@
-﻿using Giraf_AI.Classes;
-using Giraf_AI.Classes.TranslationProvider;
+﻿using Giraf_AI.DTOs.Providers.TranslationProvider;
 
 namespace Giraf_AI.Services.AI;
 

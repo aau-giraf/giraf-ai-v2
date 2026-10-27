@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
-namespace Giraf_AI.Classes.ImageProvider;
+namespace Giraf_AI.DTOs.Providers.ImageProvider;
 
 /// <summary>
 /// Contains the parameters sent to the image‑generation model container.

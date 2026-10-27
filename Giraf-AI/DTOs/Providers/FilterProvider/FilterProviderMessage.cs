@@ -1,6 +1,6 @@
-﻿namespace Giraf_AI.Classes.FilterProvider;
+﻿namespace Giraf_AI.DTOs.Providers.FilterProvider;
 
-public class FilterProviderData
+public class FilterProviderMessage
 {
     public string Role { get; init; } = "user";
     public string Content { get; init; } = string.Empty;

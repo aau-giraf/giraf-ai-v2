@@ -1,6 +1,7 @@
 using System.Text;
 using System.Text.Json;
-using Giraf_AI.Classes;
+using Giraf_AI.DTOs;
+using Giraf_AI.Models;
 using Giraf_AI.Services.AI;
 
 namespace Giraf_AI.Services;
@@ -31,7 +32,7 @@ public class ImageService
         var titleEn = await _titleGeneratorService.GenerateTitleAsync(translation.PromptEn);
         return new ImageRes
         {
-            ImageData = await _imageGenerationService.GenerateImageBase64Async(translation.PromptEn),
+            ImageData = await _imageGenerationService.GenerateImageData(translation.PromptEn),
             ImageText = new ImageText
             {
                 TitleDa = req.Prompt,

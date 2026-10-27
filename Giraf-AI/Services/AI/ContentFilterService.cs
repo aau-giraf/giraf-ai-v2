@@ -1,5 +1,4 @@
-﻿using Giraf_AI.Classes;
-using Giraf_AI.Classes.FilterProvider;
+﻿using Giraf_AI.DTOs.Providers.FilterProvider;
 
 namespace Giraf_AI.Services.AI;
 
@@ -18,7 +17,7 @@ public class ContentFilterService
         {
             Model = "Qwen2.1",
             Messages = [
-                new FilterProviderData
+                new FilterProviderMessage
                 {
                     Role = "user",
                     Content = request
@@ -30,7 +29,7 @@ public class ContentFilterService
         {
             Prompt = request,
             Filters = [
-                new FilterProviderDataRes
+                new FilterProviderResult
                 {
                     IsAllowed = "Yes",
                     Safety = "NSFW",

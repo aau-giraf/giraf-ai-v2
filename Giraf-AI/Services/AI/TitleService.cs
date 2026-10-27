@@ -1,5 +1,4 @@
-﻿using Giraf_AI.Classes;
-using Giraf_AI.Classes.TitleProvider;
+﻿using Giraf_AI.DTOs.Providers.TitleProvider;
 
 namespace Giraf_AI.Services.AI;
 

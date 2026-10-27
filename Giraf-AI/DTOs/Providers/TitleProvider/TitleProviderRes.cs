@@ -1,4 +1,4 @@
-﻿namespace Giraf_AI.Classes.TitleProvider;
+﻿namespace Giraf_AI.DTOs.Providers.TitleProvider;
 
 public class TitleProviderRes
 {
