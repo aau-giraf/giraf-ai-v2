@@ -129,9 +129,14 @@ Create a PowerShell request like this:
 ```powershell
 $body = @{
     model = "qwen3.5:9b"
+    think = $false
     prompt = "Where do giraffes live?"
     stream = $false
-} | ConvertTo-Json
+    options = @{
+        temperature = 0
+        num_predict = 50
+    }
+} | ConvertTo-Json -Depth 10
 
 $response = Invoke-RestMethod `
     -Uri "http://localhost:11434/api/generate" `
@@ -170,8 +175,13 @@ Content-Type: application/json
 
 {
   "model": "llama3.5:9b",
+  "think": false,
   "prompt": "Where do giraffes live?",
-  "stream": false
+  "stream": false,
+  "options": {
+    "temperature": 0,
+    "num_predict": 50
+  }
 }
 
 > {%
