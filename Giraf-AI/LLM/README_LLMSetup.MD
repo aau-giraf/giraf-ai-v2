@@ -85,10 +85,10 @@ If the `ollama` container is listed and its status starts with `Up`, Ollama is r
 
 # 4. Download an LLM
 
-For example, to download **Llama 3.2 3B**, run:
+For example, to download **Qwen 9.5 9B**, run:
 
 ```powershell
-docker exec -it ollama ollama pull llama3.2:3b
+docker exec -it ollama ollama pull qwen3.5:9b
 ```
 
 This downloads the model into the Ollama data stored in the Docker volume.
@@ -109,7 +109,7 @@ You should see something similar to:
 
 ```text
 NAME           ID              SIZE      MODIFIED
-llama3.2:3b    xxxxxxxxxxxx    ... GB    ...
+qwen3.5:9b    xxxxxxxxxxxx    ... GB    ...
 ```
 
 ---
@@ -128,7 +128,7 @@ Create a PowerShell request like this:
 
 ```powershell
 $body = @{
-    model = "llama3.2:3b"
+    model = "qwen3.5:9b"
     prompt = "Where do giraffes live?"
     stream = $false
 } | ConvertTo-Json
@@ -169,7 +169,7 @@ POST http://localhost:11434/api/generate
 Content-Type: application/json
 
 {
-  "model": "llama3.2:3b",
+  "model": "llama3.5:9b",
   "prompt": "Where do giraffes live?",
   "stream": false
 }

@@ -1,0 +1,20 @@
+﻿services:
+  plapre:
+    build: .
+    container_name: plapre
+    ports:
+      - "8000:8000"
+    environment:
+      HF_TOKEN: ${HF_TOKEN}
+      HF_HOME: /root/.cache/huggingface
+    volumes:
+      - huggingface_cache:/root/.cache/huggingface
+      - ./output:/output
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    restart: unless-stopped
