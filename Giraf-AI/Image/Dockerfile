@@ -6,7 +6,10 @@ ENV HF_HUB_OFFLINE=1
 ENV TRANSFORMERS_OFFLINE=1
 # Qwen-Image-2.1-Turbo is loaded with sequential CPU offload by default. This
 # allocator setting also reduces fragmentation during repeated generations.
-ENV CPU_OFFLOAD_MODE=sequential
+ENV CPU_OFFLOAD_MODE=split
+ENV ENCODER_DTYPE=float32
+ENV VAE_DEVICE=cuda_on_demand
+ENV VAE_TILING=0
 ENV PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
 ENV MAX_IMAGE_SIZE=1024
 ENV VIRTUAL_ENV=/opt/venv
