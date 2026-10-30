@@ -18,3 +18,5 @@
               count: all
               capabilities: [gpu]
     restart: unless-stopped
+volumes:
+  huggingface_cache:

@@ -76,7 +76,7 @@ volumes:
 
 ### .env
 
-Replace `YOUR_HUGGINGFACE_TOKEN` with your Hugging Face access token.
+Create a Hugging Face access token with **Read** permissions and replace `YOUR_HUGGINGFACE_TOKEN` with your Hugging Face access token.
 
 ```dotenv
 HF_TOKEN=YOUR_HUGGINGFACE_TOKEN
