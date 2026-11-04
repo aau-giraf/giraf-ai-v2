@@ -16,7 +16,7 @@ public class ImageProviderReq
     [JsonPropertyName("size")]
     public string Size { get; init; } = string.Empty;
     [JsonPropertyName("n")]
-    public int NumberImages { get; init; }
+    public int NumberImages { get; init; } = 1;
     [JsonPropertyName("num_inference_steps")]
     public int InferenceSteps { get; init; }
     [JsonPropertyName("guidance_scale")]

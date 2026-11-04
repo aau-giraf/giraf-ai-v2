@@ -28,7 +28,7 @@ public sealed class QueueHostedService(
                 ImageService imageService = scope.ServiceProvider
                     .GetRequiredService<ImageService>();
 
-                ImageRes result = await imageService.ProcessImageRequestAsync(job.Request);
+                ImageResult result = await imageService.ProcessImageRequestAsync(job.Request);
                 job.Completion.TrySetResult(result);
             }
             catch (Exception e)

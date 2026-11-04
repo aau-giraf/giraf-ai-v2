@@ -1,5 +1,6 @@
 using Giraf_AI.DTOs;
 using Giraf_AI.Jobs;
+using Giraf_AI.Services;
 using Giraf_AI.Services.Queue;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,19 +11,25 @@ namespace Giraf_AI.Controllers;
 /// </summary>
 [ApiController]
 [Route("api/image-generation")]
-public class ImageGenerationController(IQueueService queueService) : ControllerBase
+public class ImageGenerationController(
+    IQueueService queueService,
+    IImageGenerationQueueRepository imageGenerationQueueRepository) : ControllerBase
 {
     [HttpPost]
-    public async Task<IActionResult> GenerateImage([FromBody] ImageReq request, CancellationToken cancellationToken)
+    public async Task<IActionResult> GenerateImage(
+        [FromBody] ImageRequest request,
+        CancellationToken cancellationToken)
     {
-		var job = new ImageJob {
-			Request = request
-		};
-		
         try
         {
+            await imageGenerationQueueRepository.EnqueueAsync(request, cancellationToken);
+
+            var job = new ImageJob
+            {
+                Request = request
+            };
             await queueService.AddToQueue(job, cancellationToken);
-            ImageRes result = await job.Completion.Task.WaitAsync(cancellationToken);
+            ImageResult result = await job.Completion.Task.WaitAsync(cancellationToken);
             return Ok(result);
         }
         catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)

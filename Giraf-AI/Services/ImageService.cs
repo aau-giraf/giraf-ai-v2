@@ -25,19 +25,20 @@ public class ImageService
         _titleGeneratorService = titleGeneratorService;
     }
     
-    public async Task<ImageRes> ProcessImageRequestAsync(ImageReq req)
+    public async Task<ImageResult> ProcessImageRequestAsync(ImageRequest req)
     {
         var translation = await _translationService.GenerateTranslationAsync(req.Prompt);
         var contentFilter = await _contentFilterService.GenerateContentFilterAsync(translation.PromptEn);
         var titleEn = await _titleGeneratorService.GenerateTitleAsync(translation.PromptEn);
-        return new ImageRes
+        return new ImageResult
         {
             ImageData = await _imageGenerationService.GenerateImageData(translation.PromptEn),
-            ImageText = new ImageText
-            {
-                TitleDa = req.Prompt,
-                TitleEn = translation.PromptEn
-            }
+            TitleDa = req.Prompt,
+            TitleEn = req.Prompt,
+            ImgID = req.Prompt,
+            CitizenID = 69,
+            ClassID = 69,
+            CrganizationID = 69
         };
     }
 }
