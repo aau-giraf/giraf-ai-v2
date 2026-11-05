@@ -14,7 +14,7 @@ public class AppDbContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         // Map the PostgreSQL enum
-        modelBuilder.HasPostgresEnum<IdType>();
+        modelBuilder.HasPostgresEnum<IdType>("id_type");
 
         modelBuilder.Entity<ImgGenQueue>(entity =>
         {

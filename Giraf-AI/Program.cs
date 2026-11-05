@@ -18,14 +18,15 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
                        ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 
 var dataSourceBuilder = new NpgsqlDataSourceBuilder(connectionString);
-dataSourceBuilder.MapEnum<IdType>();
+dataSourceBuilder.MapEnum<IdType>("id_type");
 var dataSource = dataSourceBuilder.Build();
 
 builder.Services.AddControllers();
 builder.Services.AddSingleton<IQueueService, QueueService>();
 builder.Services.AddHostedService<QueueHostedService>();
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseNpgsql(dataSource));
+    options.UseNpgsql(dataSource, npgsqlOptions =>
+        npgsqlOptions.MapEnum<IdType>("id_type")));
 builder.Services.AddScoped<ImageService>();
 builder.Services.AddScoped<TranslationService>();
 builder.Services.AddScoped<ContentFilterService>();
