@@ -1,6 +1,7 @@
-﻿using System.Text;
+﻿﻿using System.Text;
 using System.Text.Json;
 using Giraf_AI.DTOs.Providers.ImageProvider;
+using Giraf_AI.HelperClasses;
 
 namespace Giraf_AI.Services.AI;
 
@@ -17,8 +18,8 @@ public class ImageGenService
     {
         var imageGenerateRequest = new ImageProviderReq
         {
-            Prompt = request,
-            NegativePrompt = "explicit images",
+            Prompt = new ReadFromFile(request, false, "Prompts/IMGGEN/IMG_Master.txt").Text,
+            NegativePrompt = await File.ReadAllTextAsync("Prompts/IMGGEN/IMG_Negative.txt"),
             Size = "512x512",
             NumberImages = 1,
             InferenceSteps = 8,

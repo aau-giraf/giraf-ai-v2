@@ -18,22 +18,22 @@ public static class AiClientConfiguration
         // Adds the image generation model as a client
         services.AddHttpClient("ImageGeneration", client =>
         {
-            client.BaseAddress = new Uri("http://localhost:8000/");
+            client.BaseAddress = new Uri("http://130.225.39.133:8100/");
         });
 
         services.AddHttpClient("Translation", client =>
         {
-            client.BaseAddress = new Uri("https://localhost:/");
+            client.BaseAddress = new Uri("https://localhost:/6543"); // Placeholder port
         });
 
         services.AddHttpClient("ContentFilter", client =>
         {
-            client.BaseAddress = new Uri("https://localhost:/");
+            client.BaseAddress = new Uri("https://localhost:/7845"); // Placeholder port
         });
         
         services.AddHttpClient("Title", client =>
         {
-            client.BaseAddress = new Uri("https://localhost:/");
+            client.BaseAddress = new Uri("https://localhost:/1524"); // Placeholder port
         });
     }
 }
