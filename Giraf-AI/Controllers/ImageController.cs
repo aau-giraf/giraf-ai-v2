@@ -15,12 +15,13 @@ public class ImageGenerationController(IQueueService queueService) : ControllerB
     [HttpPost]
     public async Task<IActionResult> GenerateImage([FromBody] ImageRequest request, CancellationToken cancellationToken)
     {
-		var job = new ImageJob {
-			Request = request
-		};
+		
 		
         try
         {
+            var job = new ImageJob {
+                Request = request
+            };
             await queueService.AddToQueue(job, cancellationToken);
             ImageResult result = await job.Completion.Task.WaitAsync(cancellationToken);
             return Ok(result);
