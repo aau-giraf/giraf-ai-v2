@@ -13,7 +13,7 @@ namespace Giraf_AI.Controllers;
 public class ImageGenerationController(IQueueService queueService) : ControllerBase
 {
     [HttpPost]
-    public async Task<IActionResult> GenerateImage([FromBody] ImageReq request, CancellationToken cancellationToken)
+    public async Task<IActionResult> GenerateImage([FromBody] ImageRequest request, CancellationToken cancellationToken)
     {
 		var job = new ImageJob {
 			Request = request
@@ -22,7 +22,7 @@ public class ImageGenerationController(IQueueService queueService) : ControllerB
         try
         {
             await queueService.AddToQueue(job, cancellationToken);
-            ImageRes result = await job.Completion.Task.WaitAsync(cancellationToken);
+            ImageResult result = await job.Completion.Task.WaitAsync(cancellationToken);
             return Ok(result);
         }
         catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)

@@ -13,16 +13,16 @@ public class ImageGenService
     
     private readonly HttpClient _imageGenerationClient;
     
-    public async Task<List<string>> GenerateImageData(string request)
+    public async Task<string> GenerateImageData(string request)
     {
         var imageGenerateRequest = new ImageProviderReq
         {
             Prompt = request,
             NegativePrompt = "explicit images",
             Size = "512x512",
-            NumberImages = 3,
-            InferenceSteps = 20,
-            GuidanceScale = 7.5,
+            NumberImages = 1,
+            InferenceSteps = 8,
+            GuidanceScale = 1.0,
             Seed = -1
         };
         // Serializes the request into JSON for the model container
@@ -39,16 +39,15 @@ public class ImageGenService
         // Deserializes the model container's response into ImageProviderResponse DTO
         var result = JsonSerializer.Deserialize<ImageProviderRes>(responseBody);
 
-        // Validating that the model returns at least one image
-        if (result?.Data == null || result.Data.Count == 0)
+        // Validate that the model returned one non-empty image
+        var image = result?.Data
+            .FirstOrDefault(item => !string.IsNullOrWhiteSpace(item.B64Json));
+
+        if (image == null)
         {
             throw new InvalidOperationException("Image generation returned no images.");
         }
 
-        // It extracts and returns all non-empty base64 image strings
-        return result.Data
-            .Where(item => !string.IsNullOrWhiteSpace(item.B64Json))
-            .Select(item => item.B64Json)
-            .ToList();
+        return image.B64Json;
     }
 }
