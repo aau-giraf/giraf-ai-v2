@@ -14,4 +14,9 @@
         <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.14"/>
     </ItemGroup>
 
+    <ItemGroup>
+      <_ContentIncludedByDefault Remove="express-stub-server\package-lock.json" />
+      <_ContentIncludedByDefault Remove="express-stub-server\package.json" />
+    </ItemGroup>
+
 </Project>
