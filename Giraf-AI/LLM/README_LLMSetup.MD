@@ -225,7 +225,7 @@ curl -s http://localhost:8101/api/generate -d '{
   "think": false,
   "prompt": "Where do giraffes live? Answer in two sentences.",
   "stream": false,
-  "options": { "temperature": 0, "num_predict": 300 }
+  "options": { "temperature": 0, "num_predict": 50 }
 }' | jq -r '.response'
 ```
 
@@ -239,7 +239,7 @@ $body = @{
     stream = $false
     options = @{
         temperature = 0
-        num_predict = 300
+        num_predict = 50
     }
 } | ConvertTo-Json -Depth 10
 
@@ -267,7 +267,7 @@ Content-Type: application/json
   "stream": false,
   "options": {
     "temperature": 0,
-    "num_predict": 300
+    "num_predict": 50
   }
 }
 
