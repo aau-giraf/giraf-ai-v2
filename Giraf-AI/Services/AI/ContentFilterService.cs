@@ -1,4 +1,5 @@
-﻿using Giraf_AI.DTOs.Providers.FilterProvider;
+﻿using Giraf_AI.DTOs.Providers.TranslationProvider;
+using Giraf_AI.HelperClasses;
 
 namespace Giraf_AI.Services.AI;
 
@@ -11,31 +12,18 @@ public class ContentFilterService
     
     private readonly HttpClient _contentFilterClient;
 
-    public async Task<FilterProviderRes> GenerateContentFilterAsync(string request)
+    public async Task<TranslationProviderRes> GenerateContentFilterAsync(string request)
     {
-        var contentFilterGenerateRequest = new FilterProviderReq
+        var contentFilterGenerateRequest = new TranslationProviderReq
         {
-            Model = "Qwen2.1",
-            Messages = [
-                new FilterProviderMessage
-                {
-                    Role = "user",
-                    Content = request
-                }
-            ]
+            Prompt = new ReadFromFile(request, true, "Prompts/NSFW/Master.txt").Text
         };
 
-        return await Task.FromResult(new FilterProviderRes
-        {
-            Prompt = request,
-            Filters = [
-                new FilterProviderResult
-                {
-                    IsAllowed = "Yes",
-                    Safety = "NSFW",
-                    Categories = "Sexual Content"
-                }
-            ]
-        });
+        using var response = await _contentFilterClient.PostAsJsonAsync("api/generate", contentFilterGenerateRequest);
+        response.EnsureSuccessStatusCode();
+
+        var result = await response.Content.ReadFromJsonAsync<TranslationProviderRes>() ?? throw new InvalidOperationException("Ollama returned an empty response.");
+
+        return result;
     }
 }

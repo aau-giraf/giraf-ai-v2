@@ -1,6 +1,8 @@
-﻿namespace Giraf_AI.DTOs.Providers.TranslationProvider;
+using System.Text.Json.Serialization;
+
+namespace Giraf_AI.DTOs.Providers.TranslationProvider;
 
 public class TranslationProviderRes
 {
-    public required string PromptEn { get; init; }
+    [JsonPropertyName("response")] public required string PromptEn { get; init; }
 }
