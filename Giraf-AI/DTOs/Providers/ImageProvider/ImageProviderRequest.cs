@@ -6,7 +6,7 @@ namespace Giraf_AI.DTOs.Providers.ImageProvider;
 /// <summary>
 /// Contains the parameters sent to the image‑generation model container.
 /// </summary>
-public class ImageProviderReq
+public class ImageProviderRequest
 {
     [Required]
     [JsonPropertyName("prompt")]

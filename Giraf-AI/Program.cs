@@ -28,9 +28,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(dataSource, npgsqlOptions =>
         npgsqlOptions.MapEnum<IdType>("id_type")));
 builder.Services.AddScoped<ImageService>();
-builder.Services.AddScoped<TranslationService>();
-builder.Services.AddScoped<ContentFilterService>();
-builder.Services.AddScoped<TitleService>();
+builder.Services.AddScoped<LlmService>();
 builder.Services.AddScoped<ImageGenService>();
 builder.Services.AddOpenApi();
 builder.Services.AddAiClients();

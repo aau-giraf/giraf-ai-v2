@@ -16,7 +16,7 @@ public class ImageGenService
     
     public async Task<string> GenerateImageData(string request)
     {
-        var imageGenerateRequest = new ImageProviderReq
+        var imageGenerateRequest = new ImageProviderRequest
         {
             Prompt = new ReadFromFile(request, false, "Prompts/IMGGEN/IMG_Master.txt").Text,
             NegativePrompt = await File.ReadAllTextAsync("Prompts/IMGGEN/IMG_Negative.txt"),
@@ -26,19 +26,16 @@ public class ImageGenService
             GuidanceScale = 1.0,
             Seed = -1
         };
-        // Serializes the request into JSON for the model container
-        var body = JsonSerializer.Serialize(imageGenerateRequest);
-        using var content = new StringContent(body, Encoding.UTF8, "application/json");
 
         // Send request to the model container endpoint
-        using var response = await _imageGenerationClient.PostAsync("v1/images/generations", content);
-        var responseBody = await response.Content.ReadAsStringAsync();
+        using var response = await _imageGenerationClient.PostAsJsonAsync("v1/images/generations", imageGenerateRequest);
 
         // Throws error if container returns an error
         response.EnsureSuccessStatusCode();
 
         // Deserializes the model container's response into ImageProviderResponse DTO
-        var result = JsonSerializer.Deserialize<ImageProviderRes>(responseBody);
+        var result = await response.Content.ReadFromJsonAsync<ImageProviderResponse>() 
+                     ?? throw new InvalidOperationException("Image Generator returned an empty response.");
 
         // Validate that the model returned one non-empty image
         var image = result?.Data

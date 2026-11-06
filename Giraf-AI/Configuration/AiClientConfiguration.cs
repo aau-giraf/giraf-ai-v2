@@ -21,19 +21,9 @@ public static class AiClientConfiguration
             client.BaseAddress = new Uri("http://130.225.39.133:8100/");
         });
 
-        services.AddHttpClient("Translation", client =>
+        services.AddHttpClient("Llm", client =>
         {
-            client.BaseAddress = new Uri("https://localhost:/6543"); // Placeholder port
-        });
-
-        services.AddHttpClient("ContentFilter", client =>
-        {
-            client.BaseAddress = new Uri("https://localhost:/7845"); // Placeholder port
-        });
-        
-        services.AddHttpClient("Title", client =>
-        {
-            client.BaseAddress = new Uri("https://localhost:/1524"); // Placeholder port
+            client.BaseAddress = new Uri("http://130.225.39.133:8101");
         });
     }
 }

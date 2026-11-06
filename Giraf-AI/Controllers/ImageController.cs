@@ -2,6 +2,7 @@ using Giraf_AI.Data;
 using Giraf_AI.DTOs;
 using Giraf_AI.Jobs;
 using Giraf_AI.Models;
+using Giraf_AI.Services;
 using Giraf_AI.Services.Queue;
 using Microsoft.AspNetCore.Mvc;
 
@@ -50,6 +51,10 @@ public class ImageGenerationController(
         catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
         {
             return new EmptyResult();
+        }
+        catch (ContentFilterViolationException)
+        {
+            return StatusCode(StatusCodes.Status403Forbidden, "The prompt contains inappropriate content.");
         }
 
         //var result = await imageService.ProcessImageRequestAsync(request);
