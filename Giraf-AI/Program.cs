@@ -1,7 +1,41 @@
-﻿Console.WriteLine("Hello, World!");
+using Giraf_AI.Data;
+using Giraf_AI.Configuration;
+using Giraf_AI.Models;
+using Giraf_AI.Services;
+using Giraf_AI.Services.AI;
+using Giraf_AI.Services.Queue;
+using Microsoft.EntityFrameworkCore;
+using Npgsql;
 
-Console.WriteLine("Yay I did stuff!"); // Yippee!!
+var builder = WebApplication.CreateBuilder(args);
 
-Console.WriteLine("I am doing mooooreee!");
+builder.Configuration.AddJsonFile(
+    Path.Combine("DataBase", "appsettings.json"),
+    optional: true,
+    reloadOnChange: true);
 
-Console.WriteLine("Additional edits");
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
+                       ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+
+var dataSourceBuilder = new NpgsqlDataSourceBuilder(connectionString);
+dataSourceBuilder.MapEnum<IdType>("id_type");
+var dataSource = dataSourceBuilder.Build();
+
+builder.Services.AddControllers();
+builder.Services.AddSingleton<IQueueService, QueueService>();
+builder.Services.AddHostedService<QueueHostedService>();
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseNpgsql(dataSource, npgsqlOptions =>
+        npgsqlOptions.MapEnum<IdType>("id_type")));
+builder.Services.AddScoped<ImageService>();
+builder.Services.AddScoped<LlmService>();
+builder.Services.AddScoped<ImageGenService>();
+builder.Services.AddOpenApi();
+builder.Services.AddAiClients();
+
+var app = builder.Build();
+
+app.MapOpenApi();
+app.UseHttpsRedirection();
+app.MapControllers();
+app.Run();
