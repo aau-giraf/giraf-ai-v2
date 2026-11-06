@@ -31,6 +31,10 @@ public class AppDbContext : DbContext
                 .HasMaxLength(500)
                 .IsRequired();
 
+            entity.Property(e => e.TranslatedPrompt)
+                .HasColumnName("translated_prompt")
+                .HasMaxLength(500);
+
             entity.Property(e => e.ImageId)
                 .HasColumnName("image_id")
                 .HasMaxLength(100)
