@@ -120,15 +120,15 @@ sudo docker run --gpus all -p PORT:PORT \
 
 ```
 docker run --gpus all -p 8000:8000 `
-    -v "C:\Users\<you>\qwen-image-2.1-turbo:/models/qwen-image-2.1-turbo" `
+    -v "C:\Users\<you>\models\Qwen-Image-2.1-Turbo:/models/qwen-image-2.1-turbo" `
     qwen-image-21-turbo-api
 ```
 
 **🐧 Linux**
 
 ```
-sudo docker run --gpus all -p 8000:8000 \
-    -v "$HOME/qwen-image-2.1-turbo:/models/qwen-image-2.1-turbo" \
+sudo docker run --gpus all -p 8100:8000 \
+    -v "$HOME/models/Qwen-Image-2.1-Turbo:/models/qwen-image-2.1-turbo" \
     qwen-image-21-turbo-api
 ```
 
