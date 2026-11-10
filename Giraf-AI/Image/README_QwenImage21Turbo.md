@@ -146,9 +146,9 @@ Model ready.
 
 Loading takes a minute or two. The first image after a start is slower than the following ones.
 
-The container splits the model between the GPU and your RAM: the part that generates the image stays on the GPU, while the text encoder and the VAE (the parts that read your prompt and produce the final picture) stay in RAM. This keeps generation fast and leaves part of the GPU memory free for other programs. These settings are already in the `Dockerfile`, so you do not need to add anything to the start command. A 1024x1024 image takes about 15 seconds on an NVIDIA A10.
+The container splits the model between the GPU and your RAM: the part that generates the image stays on the GPU, while the text encoder and the VAE (the parts that read your prompt and produce the final picture) stay in RAM. This keeps generation fast and leaves part of the GPU memory free for other programs. These settings are already in the `Dockerfile`, so you do not need to add anything to the start command. A 512x512 image takes about 8 seconds on an NVIDIA A10.
 
-The API generates `n` images one after the other, and requests are limited to 1024x1024 per image by default.
+The API generates `n` images one after the other, and requests are limited to 1024x1024 per image by default. It will, however, require more VRAM the larger the image is. It is therefore recommended to use 512x512, as it will only require about 15 GB VRAM. 
 
 ### ⚙️ Optional settings
 
@@ -219,14 +219,14 @@ Once the model is ready, send a test request from a **second terminal** (the fir
 $body = @{
     prompt              = "apple"
     negative_prompt     = ""
-    size                = "1024x1024"
+    size                = "512x512"
     n                   = 1
     num_inference_steps = 8
     guidance_scale      = 1.0
     seed                = -1
 } | ConvertTo-Json
 
-$response = Invoke-RestMethod -Uri "http://localhost:8000/v1/images/generations" `
+$response = Invoke-RestMethod -Uri "http://localhost:8100/v1/images/generations" `
     -Method Post -ContentType "application/json" -Body $body -TimeoutSec 300
 
 $bytes = [Convert]::FromBase64String($response.data[0].b64_json)
@@ -239,9 +239,9 @@ Write-Host "Saved: $PWD\generated.png"
 Install `jq` first if needed: `sudo apt install -y jq`
 
 ```
-curl -s http://localhost:8000/v1/images/generations \
+curl -s http://localhost:8100/v1/images/generations \
   -H "Content-Type: application/json" \
-  -d '{"prompt":"apple","negative_prompt":"","size":"1024x1024","n":1,"num_inference_steps":8,"guidance_scale":1.0,"seed":-1}' \
+  -d '{"prompt":"apple","negative_prompt":"","size":"512x512","n":1,"num_inference_steps":8,"guidance_scale":1.0,"seed":-1}' \
   | jq -r '.data[0].b64_json' | base64 -d > generated.png
 ```
 
@@ -253,7 +253,7 @@ The image is saved as `generated.png` in your current folder. 🎉
 |-----------------------|-----------|---------------------------------------------------------------------------------------------------------|
 | `prompt`              | `"apple"` | What you want to generate                                                                               |
 | `negative_prompt`     | `""`      | What the image should avoid. Only has an effect when `guidance_scale` is above 1.0                      |
-| `size`                | `1024x1024` | Output resolution                                                                                     |
+| `size`                | `512x512` | Output resolution                                                                                     |
 | `n`                   | `1`       | Number of images to generate                                                                            |
 | `num_inference_steps` | `8`       | Denoising steps (the Turbo checkpoint is designed for 8 steps)                                          |
 | `guidance_scale`      | `1.0`     | Classifier-free guidance strength (`true_cfg_scale` in Qwen's pipeline). `1.0` is fastest and recommended |
