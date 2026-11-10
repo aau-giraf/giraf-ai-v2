@@ -24,9 +24,7 @@ public class LlmService
             Options = new LlmProviderOptions
             {
                 Temperature = 0,
-                NumPredict = 50,
-                NumCtx = 200,
-                Seed = -1
+                NumPredict = 50
             }
         };
 

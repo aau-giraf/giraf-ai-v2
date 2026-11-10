@@ -23,7 +23,7 @@ public static class AiClientConfiguration
 
         services.AddHttpClient("Llm", client =>
         {
-            client.BaseAddress = new Uri("http://130.225.39.133:8101");
+            client.BaseAddress = new Uri("http://172.25.11.238:8101");
         });
     }
 }

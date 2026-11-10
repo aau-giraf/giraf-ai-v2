@@ -59,6 +59,9 @@ public class AppDbContext : DbContext
 
             entity.Property(e => e.Nsfw)
                 .HasColumnName("nsfw");
+            
+            entity.Property(e => e.ImgData)
+                .HasColumnName("img_data");
 
             entity.Property(e => e.Received)
                 .HasColumnName("received")

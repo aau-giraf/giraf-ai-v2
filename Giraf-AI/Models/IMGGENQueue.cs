@@ -11,6 +11,7 @@ public class ImgGenQueue
     public string? TitleDa { get; set; }
     public string? TitleEn { get; set; }
     public bool? Nsfw { get; set; }
+    public string? ImgData { get; set; }
     public DateTime Received { get; set; }
     public DateTime? Finished { get; set; }
 }

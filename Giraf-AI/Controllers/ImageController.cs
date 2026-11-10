@@ -58,8 +58,5 @@ public class ImageGenerationController(
             return StatusCode(StatusCodes.Status403Forbidden, "The prompt contains inappropriate content.");
         }
 
-        //var result = await imageService.ProcessImageRequestAsync(request);
-
-        //return Ok(result);
     }
 }
