@@ -225,7 +225,7 @@ curl -s http://localhost:8101/api/generate -d '{
   "think": false,
   "prompt": "Where do giraffes live? Answer in two sentences.",
   "stream": false,
-  "options": { "temperature": 0, "num_predict": 50 }
+  "options": { "temperature": 0, "num_predict": 600 }
 }' | jq -r '.response'
 ```
 
