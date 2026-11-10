@@ -1,4 +1,5 @@
 using Giraf_AI.Models;
+using System.Text.Json.Serialization;
 
 namespace Giraf_AI.DTOs;
 
@@ -11,7 +12,12 @@ public class ImageResult
     public required string TitleDa { get; init; } = string.Empty;
     public required string TitleEn { get; init; } = string.Empty;
     public required string ImgID { get; init; } = string.Empty;
-    public int CitizenID { get; init; }
-    public int ClassID { get; init; }
-    public int CrganizationID { get; init; }
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public int? CitizenID { get; init; }
+
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public int? ClassID { get; init; }
+
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public int? OrganizationID { get; init; }
 }
