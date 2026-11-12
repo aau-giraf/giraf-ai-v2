@@ -34,8 +34,7 @@ builder.Services.AddScoped<ImageGenService>();
 builder.Services.AddOpenApi();
 builder.Services.AddAiClients();
 
-// TTS provider integration: separate from the existing image queue.
-// The second TTS engine can be registered as another ITtsProvider later.
+// Each TTS provider implements the same interface; additional engines can be added later.
 builder.Services.AddHttpClient<PlapreTtsProvider>(client =>
 {
     string url = builder.Configuration["Tts:PlapreBaseUrl"]
@@ -48,6 +47,10 @@ builder.Services.AddTransient<ITtsProvider>(serviceProvider =>
     serviceProvider.GetRequiredService<PlapreTtsProvider>());
 builder.Services.AddSingleton<IAudioStorage, LocalAudioStorage>();
 builder.Services.AddScoped<TtsGenerationService>();
+
+// Separate from the existing image queue: one TTS worker, bounded FIFO queue.
+builder.Services.AddSingleton<TtsQueueService>();
+builder.Services.AddHostedService<TtsQueueWorker>();
 
 var app = builder.Build();
 
