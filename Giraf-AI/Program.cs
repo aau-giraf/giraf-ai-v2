@@ -4,6 +4,7 @@ using Giraf_AI.Models;
 using Giraf_AI.Services;
 using Giraf_AI.Services.AI;
 using Giraf_AI.Services.Queue;
+using Giraf_AI.Services.TTS;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
 
@@ -32,6 +33,21 @@ builder.Services.AddScoped<LlmService>();
 builder.Services.AddScoped<ImageGenService>();
 builder.Services.AddOpenApi();
 builder.Services.AddAiClients();
+
+// TTS provider integration: separate from the existing image queue.
+// The second TTS engine can be registered as another ITtsProvider later.
+builder.Services.AddHttpClient<PlapreTtsProvider>(client =>
+{
+    string url = builder.Configuration["Tts:PlapreBaseUrl"]
+                 ?? "http://localhost:8000/";
+
+    client.BaseAddress = new Uri(url);
+    client.Timeout = TimeSpan.FromMinutes(5);
+});
+builder.Services.AddTransient<ITtsProvider>(serviceProvider =>
+    serviceProvider.GetRequiredService<PlapreTtsProvider>());
+builder.Services.AddSingleton<IAudioStorage, LocalAudioStorage>();
+builder.Services.AddScoped<TtsGenerationService>();
 
 var app = builder.Build();
 
