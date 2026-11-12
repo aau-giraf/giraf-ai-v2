@@ -1,22 +1,14 @@
-using Giraf_AI.DTOs;
-
 namespace Giraf_AI.Services.TTS;
 
-/// <summary>Selects the configured speech provider and stores its WAV output.</summary>
+/// <summary>
+/// Selects the configured speech provider and returns generated WAV bytes.
+/// CORE receives the bytes through the API response; AI does not store them.
+/// </summary>
 public sealed class TtsGenerationService(
     IEnumerable<ITtsProvider> providers,
-    IConfiguration configuration,
-    IAudioStorage audioStorage)
+    IConfiguration configuration)
 {
-    public Task<TtsResult> GenerateAsync(
-        string text,
-        CancellationToken cancellationToken) =>
-        GenerateAsync(text, Guid.NewGuid(), cancellationToken);
-
-    public async Task<TtsResult> GenerateAsync(
-        string text,
-        Guid id,
-        CancellationToken cancellationToken)
+    public Task<byte[]> GenerateAsync(string text, CancellationToken cancellationToken)
     {
         string providerName = configuration["Tts:DefaultProvider"] ?? "plapre";
 
@@ -25,13 +17,6 @@ public sealed class TtsGenerationService(
             ?? throw new InvalidOperationException(
                 $"TTS provider '{providerName}' is not registered.");
 
-        byte[] wav = await provider.GenerateWavAsync(text, cancellationToken);
-        await audioStorage.SaveAsync(id, wav, cancellationToken);
-
-        return new TtsResult
-        {
-            Id = id,
-            AudioUrl = $"/api/tts/{id}/audio"
-        };
+        return provider.GenerateWavAsync(text, cancellationToken);
     }
 }
