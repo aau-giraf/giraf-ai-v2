@@ -12,10 +12,10 @@ public sealed class TtsQueueWorker(
         {
             await foreach (TtsQueueItem job in queue.ReadAllAsync(stoppingToken))
             {
-                queue.MarkProcessing(job.Id);
-
                 try
                 {
+                    queue.MarkProcessing(job.Id);
+
                     using IServiceScope scope = scopeFactory.CreateScope();
                     TtsGenerationService generator = scope.ServiceProvider
                         .GetRequiredService<TtsGenerationService>();
@@ -39,6 +39,11 @@ public sealed class TtsQueueWorker(
                     logger.LogError(exception, "TTS job {JobId} failed.", job.Id);
                     queue.MarkFailed(job.Id, "Speech generation failed.");
                     job.Completion?.TrySetException(exception);
+                }
+                finally
+                {
+                    // Free capacity for the next request on success, failure, or shutdown.
+                    queue.ReleaseSlot();
                 }
             }
         }
