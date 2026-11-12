@@ -17,11 +17,4 @@ CREATE TABLE "imggen_queue" (
     received     		TIMESTAMP NOT NULL,
     finished   	 		TIMESTAMP
 );
-
-CREATE TABLE "tts_queue" (
-    queue_id	SERIAL PRIMARY KEY NOT NULL,
-    prompt      VARCHAR(500) NOT NULL,
-    received    TIMESTAMP NOT NULL,
-    finished    TIMESTAMP
-); 
 ```
