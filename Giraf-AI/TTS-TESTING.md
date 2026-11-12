@@ -52,9 +52,9 @@ same queue to avoid bypassing the worker.
 
 ## Queue behavior and limitations
 
-- Bounded FIFO channel: at most 100 **waiting** jobs. The worker processes one
-  additional job at a time.
-- If the waiting queue is full, new requests receive **503 Service Unavailable**.
+- At most **1,000 outstanding TTS jobs total** (waiting + processing). The worker processes one job at a time.
+- Admission is atomic under concurrent requests. When all 1,000 slots are occupied, both POST endpoints immediately return **503 Service Unavailable** with a `Retry-After: 10` hint; the client may try again later.
+- A slot is released when a job completes or fails. For a quick capacity test, temporarily set `Tts__MaxOutstandingJobs=2` before starting the API; the configured limit must be between 1 and 1,000.
 - States: `queued`, `processing`, `completed`, `failed`.
 - A failed job does not stop the worker. Failures are logged; clients see a
   generic error message.
