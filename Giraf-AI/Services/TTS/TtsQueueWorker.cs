@@ -1,6 +1,9 @@
 namespace Giraf_AI.Services.TTS;
 
-/// <summary>Processes queued TTS jobs sequentially, independently of HTTP requests.</summary>
+/// <summary>
+/// Processes one Plapre request at a time and completes the waiting HTTP request
+/// with WAV bytes. Nothing is written to disk or a TTS database.
+/// </summary>
 public sealed class TtsQueueWorker(
     TtsQueueService queue,
     IServiceScopeFactory scopeFactory,
@@ -14,42 +17,46 @@ public sealed class TtsQueueWorker(
             {
                 try
                 {
-                    queue.MarkProcessing(job.Id);
+                    // If CORE times out or disconnects, stop wasting Plapre capacity.
+                    using var linkedCancellation = CancellationTokenSource.CreateLinkedTokenSource(
+                        stoppingToken, job.RequestCancellationToken);
+
+                    linkedCancellation.Token.ThrowIfCancellationRequested();
 
                     using IServiceScope scope = scopeFactory.CreateScope();
                     TtsGenerationService generator = scope.ServiceProvider
                         .GetRequiredService<TtsGenerationService>();
 
-                    var result = await generator.GenerateAsync(
-                        job.Text,
-                        job.Id,
-                        stoppingToken);
+                    byte[] wav = await generator.GenerateAsync(
+                        job.Text, linkedCancellation.Token);
 
-                    queue.MarkCompleted(job.Id, result.AudioUrl);
-                    job.Completion?.TrySetResult(result);
+                    job.Completion.TrySetResult(wav);
                 }
-                catch (OperationCanceledException) when (stoppingToken.IsCancellationRequested)
+                catch (OperationCanceledException) when (
+                    stoppingToken.IsCancellationRequested ||
+                    job.RequestCancellationToken.IsCancellationRequested)
                 {
-                    queue.MarkFailed(job.Id, "The server stopped during speech generation.");
-                    job.Completion?.TrySetCanceled(stoppingToken);
-                    break;
+                    job.Completion.TrySetCanceled();
+
+                    if (stoppingToken.IsCancellationRequested)
+                    {
+                        break;
+                    }
                 }
                 catch (Exception exception)
                 {
                     logger.LogError(exception, "TTS job {JobId} failed.", job.Id);
-                    queue.MarkFailed(job.Id, "Speech generation failed.");
-                    job.Completion?.TrySetException(exception);
+                    job.Completion.TrySetException(exception);
                 }
                 finally
                 {
-                    // Free capacity for the next request on success, failure, or shutdown.
                     queue.ReleaseSlot();
                 }
             }
         }
         catch (OperationCanceledException) when (stoppingToken.IsCancellationRequested)
         {
-            // Normal shutdown while waiting for another job.
+            // Normal server shutdown.
         }
     }
 }
