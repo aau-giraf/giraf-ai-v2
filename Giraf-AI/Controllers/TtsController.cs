@@ -24,8 +24,7 @@ public sealed class TtsController(
 
         if (!queue.TryEnqueue(request.Text, waitForCompletion: false, out TtsQueueItem job))
         {
-            return StatusCode(StatusCodes.Status503ServiceUnavailable,
-                "TTS queue is full. Try again later.");
+            return QueueFull();
         }
 
         return AcceptedAtAction(
@@ -58,8 +57,7 @@ public sealed class TtsController(
 
         if (!queue.TryEnqueue(request.Text, waitForCompletion: true, out TtsQueueItem job))
         {
-            return StatusCode(StatusCodes.Status503ServiceUnavailable,
-                "TTS queue is full. Try again later.");
+            return QueueFull();
         }
 
         try
@@ -78,6 +76,15 @@ public sealed class TtsController(
             return StatusCode(StatusCodes.Status500InternalServerError,
                 "Speech generation failed.");
         }
+    }
+
+    private IActionResult QueueFull()
+    {
+        // A hint to clients; it does not guarantee that capacity is free in 10 seconds.
+        Response.Headers["Retry-After"] = "10";
+        return StatusCode(
+            StatusCodes.Status503ServiceUnavailable,
+            $"TTS queue is full (maximum {queue.MaxOutstandingJobs} outstanding requests). Try again later.");
     }
 
     [HttpGet("{id:guid}/audio")]
