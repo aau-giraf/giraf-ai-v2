@@ -1,15 +1,31 @@
-from fastapi import FastAPI
-from fastapi.responses import StreamingResponse
-from pydantic import BaseModel
-from app.tts import generate_audio
 import uuid
+from contextlib import asynccontextmanager
+from typing import Literal
 
-app = FastAPI()
+from fastapi import FastAPI, HTTPException
+from fastapi.responses import StreamingResponse
+from pydantic import BaseModel, Field
+
+from app.tts import VOICES, generate_audio, warmup
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Runs before the server accepts requests, so /health only answers
+    # once the model and all voices are downloaded and loaded.
+    print("Loading Kokoro (first start downloads the model, this can take a few minutes)...", flush=True)
+    warmup()
+    print("Kokoro ready.", flush=True)
+    yield
+
+
+app = FastAPI(lifespan=lifespan)
+
 
 class TTSRequest(BaseModel):
-    input: str
-    accent: str = "a"
-    voice: str = "f"
+    input: str = Field(min_length=1)
+    accent: Literal["a", "b"] = "a"   # a = American, b = British
+    voice: Literal["f", "m"] = "f"    # f = female, m = male
 
 
 @app.get("/health")
@@ -24,18 +40,17 @@ def models():
 
 @app.post("/v1/audio/speech")
 def speech(request: TTSRequest):
-    voices = {
-        "a": {"f": "af_heart", "m": "am_adam"},
-        "b": {"f": "bf_emma", "m": "bm_george"}
-    }
+    voice = VOICES[request.accent][request.voice]
 
-    voice = voices[request.accent][request.voice]
-    audio = generate_audio(request.input, voice, request.accent)
+    try:
+        audio = generate_audio(request.input, voice, request.accent)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
 
     filename = f"{uuid.uuid4()}.wav"
 
     return StreamingResponse(
         audio,
         media_type="audio/wav",
-        headers={"Content-Disposition": f'attachment; filename="{filename}"'}
+        headers={"Content-Disposition": f'attachment; filename="{filename}"'},
     )
