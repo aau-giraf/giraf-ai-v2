@@ -12,7 +12,7 @@ public static class AiClientConfiguration
         {
             http.ConfigureHttpClient(client =>
             {
-                client.Timeout = TimeSpan.FromSeconds(300);
+                client.Timeout = TimeSpan.FromSeconds(30);
             });
         });
         // Adds the image generation model as a client
@@ -24,6 +24,11 @@ public static class AiClientConfiguration
         services.AddHttpClient("Llm", client =>
         {
             client.BaseAddress = new Uri("http://172.25.11.238:8101");
+        });
+
+        services.AddHttpClient("GirafCore", client =>
+        {
+            client.BaseAddress = new Uri("http://localhost:4500/"); // Placeholder for the GirafCore service URL, replace with actual URL
         });
     }
 }

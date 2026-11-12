@@ -31,10 +31,6 @@ public class AppDbContext : DbContext
                 .HasMaxLength(500)
                 .IsRequired();
 
-            entity.Property(e => e.TranslatedPrompt)
-                .HasColumnName("translated_prompt")
-                .HasMaxLength(500);
-
             entity.Property(e => e.ImageId)
                 .HasColumnName("image_id")
                 .HasMaxLength(100)
@@ -49,26 +45,9 @@ public class AppDbContext : DbContext
                 .HasColumnType("id_type")
                 .IsRequired();
 
-            entity.Property(e => e.TitleDa)
-                .HasColumnName("title_da")
-                .HasMaxLength(100);
-
-            entity.Property(e => e.TitleEn)
-                .HasColumnName("title_en")
-                .HasMaxLength(100);
-
-            entity.Property(e => e.Nsfw)
-                .HasColumnName("nsfw");
-            
-            entity.Property(e => e.ImgData)
-                .HasColumnName("img_data");
-
             entity.Property(e => e.Received)
                 .HasColumnName("received")
                 .IsRequired();
-
-            entity.Property(e => e.Finished)
-                .HasColumnName("finished");
         });
     }
 }

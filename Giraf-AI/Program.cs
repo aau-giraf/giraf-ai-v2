@@ -35,6 +35,13 @@ builder.Services.AddAiClients();
 
 var app = builder.Build();
 
+using (IServiceScope scope = app.Services.CreateScope())
+{
+    AppDbContext dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    await dbContext.Database.EnsureCreatedAsync();
+}
+
+
 app.MapOpenApi();
 app.UseHttpsRedirection();
 app.MapControllers();
