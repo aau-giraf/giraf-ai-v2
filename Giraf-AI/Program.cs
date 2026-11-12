@@ -45,10 +45,10 @@ builder.Services.AddHttpClient<PlapreTtsProvider>(client =>
 });
 builder.Services.AddTransient<ITtsProvider>(serviceProvider =>
     serviceProvider.GetRequiredService<PlapreTtsProvider>());
-builder.Services.AddSingleton<IAudioStorage, LocalAudioStorage>();
 builder.Services.AddScoped<TtsGenerationService>();
 
 // Separate from the existing image queue: one TTS worker, bounded FIFO queue.
+// TTS has no database or file storage; the HTTP response carries the WAV.
 builder.Services.AddSingleton<TtsQueueService>();
 builder.Services.AddHostedService<TtsQueueWorker>();
 
