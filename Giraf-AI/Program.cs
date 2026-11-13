@@ -32,6 +32,7 @@ builder.Services.AddScoped<LlmService>();
 builder.Services.AddScoped<ImageGenService>();
 builder.Services.AddOpenApi();
 builder.Services.AddAiClients();
+builder.WebHost.UseUrls("http://localhost:8100"); // Subject to change
 
 var app = builder.Build();
 
