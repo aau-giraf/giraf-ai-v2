@@ -16,6 +16,7 @@ public class ImageRequest
     public required string ImgID { get; init; } = string.Empty;
 
     [Required(ErrorMessage = "MapID is required")]
+    [Range(1, int.MaxValue, ErrorMessage = "MapID must be a positive integer")]
     public required int MapID { get; init; }
 
     [Required(ErrorMessage = "ID type is required")]
