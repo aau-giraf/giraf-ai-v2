@@ -40,7 +40,7 @@ public class TtsController(
             var job = new TtsJob
             {
                 Request = request,
-                QueueId = queueEntry.QueueId
+                TtsId = queueEntry.TtsId
             };
             await queueService.AddToQueue(job, cancellationToken);
             return Accepted();

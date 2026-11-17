@@ -52,12 +52,12 @@ public sealed class TtsQueueHostedService(
                 }
 
                 int deletedRows = await dbContext.TtsQueues
-                    .Where(entry => entry.QueueId == job.QueueId)
+                    .Where(entry => entry.TtsId == job.TtsId)
                     .ExecuteDeleteAsync(stoppingToken);
                 if (deletedRows != 1)
                 {
                     throw new InvalidOperationException(
-                        $"Expected to delete queue entry {job.QueueId}, but deleted {deletedRows} rows.");
+                        $"Expected to delete TTS entry {job.TtsId}, but deleted {deletedRows} rows.");
                 }
 
                 job.Completion.TrySetResult(result);
@@ -77,14 +77,14 @@ public sealed class TtsQueueHostedService(
 
         List<TtsQueue> pendingEntries = await dbContext.TtsQueues
             .AsNoTracking()
-            .OrderBy(entry => entry.QueueId)
+            .OrderBy(entry => entry.TtsId)
             .ToListAsync(cancellationToken);
 
         foreach (TtsQueue entry in pendingEntries)
         {
             var job = new TtsJob
             {
-                QueueId = entry.QueueId,
+                TtsId = entry.TtsId,
                 Request = new TtsRequest
                 {
                     Text = entry.Prompt,
@@ -94,15 +94,15 @@ public sealed class TtsQueueHostedService(
                         LangType.da => "da",
                         LangType.en => "en",
                         _ => throw new InvalidOperationException(
-                            $"Queue entry {entry.QueueId} has an unsupported language.")
+                            $"TTS entry {entry.TtsId} has an unsupported language.")
                     }
                 }
             };
 
             await queueService.AddToQueue(job, cancellationToken);
             logger.LogInformation(
-                "Restored pending TTS job for queue entry {QueueId}.",
-                entry.QueueId);
+                "Restored pending TTS job for TTS entry {TtsId}.",
+                entry.TtsId);
         }
     }
 }

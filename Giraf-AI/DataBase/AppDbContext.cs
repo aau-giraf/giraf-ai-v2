@@ -33,8 +33,7 @@ public class AppDbContext : DbContext
         modelBuilder.Entity<TtsQueue>(entity =>
         {
             entity.ToTable("tts_queue");
-            entity.HasKey(e => e.QueueId);
-            entity.Property(e => e.QueueId).HasColumnName("queue_id").ValueGeneratedOnAdd();
+            entity.HasKey(e => e.TtsId);
             entity.Property(e => e.Prompt).HasColumnName("prompt").HasMaxLength(500).IsRequired();
             entity.Property(e => e.TtsId).HasColumnName("tts_id").IsRequired();
             entity.Property(e => e.Lang).HasColumnName("language").HasColumnType("language").IsRequired();
