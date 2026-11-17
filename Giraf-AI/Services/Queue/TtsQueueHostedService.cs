@@ -39,7 +39,7 @@ public sealed class TtsQueueHostedService(
                 TtsService ttsService = scope.ServiceProvider.GetRequiredService<TtsService>();
                 AppDbContext dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 
-                TtsResult result = await ttsService.ProcessTtsRequestAsync(job.Request, stoppingToken);
+                TtsResult result = await ttsService.ProcessTtsRequestAsync(job.Request);
                 var girafCoreClient = httpClientFactory.CreateClient("GirafCore");
                 // TODO: Confirm CORE callback path and JSON contract with the CORE team.
                 using var response = await girafCoreClient.PostAsJsonAsync(
@@ -87,7 +87,7 @@ public sealed class TtsQueueHostedService(
                 QueueId = entry.QueueId,
                 Request = new TtsRequest
                 {
-                    Prompt = entry.Prompt,
+                    Text = entry.Prompt,
                     TtsID = entry.TtsId,
                     Lang = entry.Lang switch
                     {
@@ -101,7 +101,8 @@ public sealed class TtsQueueHostedService(
 
             await queueService.AddToQueue(job, cancellationToken);
             logger.LogInformation(
-                "Restored pending TTS job for queue entry {QueueId}.", entry.QueueId);
+                "Restored pending TTS job for queue entry {QueueId}.",
+                entry.QueueId);
         }
     }
 }

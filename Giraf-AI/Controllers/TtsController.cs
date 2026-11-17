@@ -23,7 +23,7 @@ public class TtsController(
         {
             var queueEntry = new TtsQueue
             {
-                Prompt = request.Prompt,
+                Prompt = request.Text,
                 TtsId = request.TtsID,
                 Lang = request.Lang switch
                 {
