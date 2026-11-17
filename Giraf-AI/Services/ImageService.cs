@@ -3,7 +3,7 @@ using Giraf_AI.Services.AI;
 
 namespace Giraf_AI.Services;
 
-public class ImageService
+public class ImageService : IImageService
 {
     private readonly LlmService _llmService;
     private readonly ImageGenService _imageGenerationService;

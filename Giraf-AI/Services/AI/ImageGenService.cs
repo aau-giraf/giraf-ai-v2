@@ -5,7 +5,7 @@ using Giraf_AI.HelperClasses;
 
 namespace Giraf_AI.Services.AI;
 
-public class ImageGenService
+public class ImageGenService : IImageGenService
 {
     public ImageGenService(IHttpClientFactory httpClientFactory)
     {
@@ -37,6 +37,10 @@ public class ImageGenService
         var result = await response.Content.ReadFromJsonAsync<ImageProviderResponse>() 
                      ?? throw new InvalidOperationException("Image Generator returned an empty response.");
 
+        if (result == null)
+        {
+            throw new InvalidOperationException("Image Generator returned an empty response.");
+        }
         // Validate that the model returned one non-empty image
         var image = result?.Data
             .FirstOrDefault(item => !string.IsNullOrWhiteSpace(item.B64Json));

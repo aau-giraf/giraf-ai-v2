@@ -4,7 +4,7 @@ using Giraf_AI.HelperClasses;
 
 namespace Giraf_AI.Services.AI;
 
-public class LlmService
+public class LlmService : ILlmService
 {
     public LlmService(IHttpClientFactory httpClientFactory)
     {

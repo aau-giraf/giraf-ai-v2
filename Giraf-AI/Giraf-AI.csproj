@@ -19,4 +19,9 @@
       <_ContentIncludedByDefault Remove="express-stub-server\package.json" />
     </ItemGroup>
 
+    <ItemGroup>
+        <Content Include="Prompts\**\*.txt">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
+    </ItemGroup>
 </Project>
