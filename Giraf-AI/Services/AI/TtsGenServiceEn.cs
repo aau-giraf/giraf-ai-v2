@@ -9,7 +9,7 @@ public class TtsGenServiceEn
 
     public TtsGenServiceEn(IHttpClientFactory httpClientFactory)
     {
-        _TtsGenerationClient = httpClientFactory.CreateClient("TtsDa");
+        _TtsGenerationClient = httpClientFactory.CreateClient("TtsEn");
     }
 
     public async Task<string> GenerateTtsAsyncEn(string request)

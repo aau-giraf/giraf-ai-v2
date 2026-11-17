@@ -36,6 +36,8 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 builder.Services.AddScoped<ImageService>();
 builder.Services.AddScoped<LlmService>();
 builder.Services.AddScoped<ImageGenService>();
+builder.Services.AddScoped<TtsGenServiceDa>();
+builder.Services.AddScoped<TtsGenServiceEn>();
 builder.Services.AddScoped<TtsService>();
 builder.Services.AddOpenApi();
 builder.Services.AddAiClients();

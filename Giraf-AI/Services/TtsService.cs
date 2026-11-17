@@ -20,7 +20,7 @@ public class TtsService
     public async Task<TtsResult> ProcessTtsRequestAsync(TtsRequest req)
     {
 
-        if (req.Lang == "Da")
+        if (req.Lang == "da")
         {
             var RawAudio = await _TtsGenServiceDa.GenerateTtsAsyncDa(req.Text);
             return new TtsResult
@@ -28,9 +28,8 @@ public class TtsService
                 Audio = RawAudio,
                 TtsID = req.TtsID,
             };
-
         }
-        else if (req.Lang == "En")
+        else if (req.Lang == "en")
         {
             var RawAudio = await _TtsGenServiceEn.GenerateTtsAsyncEn(req.Text);
             return new TtsResult
