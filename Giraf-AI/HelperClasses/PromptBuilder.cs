@@ -1,8 +1,8 @@
 namespace Giraf_AI.HelperClasses;
 
-public class ReadFromFile
+public class PromptBuilder
 {
-    public ReadFromFile(string str, bool placement, string path)
+    public PromptBuilder(string str, bool placement, string path)
     {
         try
         {

@@ -11,7 +11,7 @@ public class TtsGenServiceDa
         _TtsGenerationClient = httpClientFactory.CreateClient("TtsDa");
     }
 
-    public async Task<string> GenerateTtsAsyncDa(string text)
+    public async Task<byte[]> GenerateTtsAsyncDa(string text)
     {
         var TtsGenerateRequestDa = new TtsProviderRequestDa
         {
@@ -25,8 +25,6 @@ public class TtsGenServiceDa
         using var response = await _TtsGenerationClient.PostAsJsonAsync("v1/audio/speech", TtsGenerateRequestDa);
         response.EnsureSuccessStatusCode();
 
-        var result = await response.Content.ReadAsStringAsync()
-                     ?? throw new InvalidOperationException("Plapre encountered an error");
-        return result;
+        return await response.Content.ReadAsByteArrayAsync();
     }
 }

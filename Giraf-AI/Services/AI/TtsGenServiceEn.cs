@@ -12,7 +12,7 @@ public class TtsGenServiceEn
         _TtsGenerationClient = httpClientFactory.CreateClient("TtsEn");
     }
 
-    public async Task<string> GenerateTtsAsyncEn(string request)
+    public async Task<byte[]> GenerateTtsAsyncEn(string request)
     {
         var TtsGenerateRequestEn = new TtsProviderRequestEn
         {
@@ -24,9 +24,7 @@ public class TtsGenServiceEn
         using var response = await _TtsGenerationClient.PostAsJsonAsync("v1/audio/speech", TtsGenerateRequestEn);
         response.EnsureSuccessStatusCode();
 
-        var result = await response.Content.ReadAsStringAsync()
-                     ?? throw new InvalidOperationException("Kokoro encountered an error");
-        return result;
+        return await response.Content.ReadAsByteArrayAsync();
     }
     
 }
