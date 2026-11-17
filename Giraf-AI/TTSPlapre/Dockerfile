@@ -10,12 +10,22 @@ RUN python -m venv /opt/venv
 
 ENV PATH="/opt/venv/bin:$PATH"
 
+# All Hugging Face downloads (model weights) go to the mounted models directory
+ENV HF_HOME=/models/plapre
+
 RUN python -m pip install --upgrade pip
 
 RUN python -m pip install --no-cache-dir \
     "vllm>=0.15,<0.16" \
     "plapre[serve] @ git+https://github.com/syv-ai/plapre.git"
 
+# Start script: converts a GPU memory budget in GiB (PLAPRE_GPU_GB) to the
+# fraction that plapre-serve expects, then starts the server.
+COPY start.sh /app/start.sh
+RUN chmod +x /app/start.sh
+
+ENV PLAPRE_GPU_GB=4
+
 EXPOSE 8000
 
-CMD ["plapre-serve", "--checkpoint", "syvai/plapre-nano-v2", "--gpu-mem", "0.4", "--port", "8000"]
+CMD ["/app/start.sh"]

@@ -56,31 +56,37 @@ docker build -t kokoro-tts .
 
 Replace `<MODELS_DIR>` with your models directory. Port `8102` is used on the host because the Qwen image service uses `8000`; change it if needed.
 
+The container runs in the foreground, so the logs appear directly in the terminal and no separate `docker logs` command is needed. Run it in a dedicated terminal (or a `tmux` session), because closing the terminal or pressing `Ctrl+C` stops the container.
+
 **Windows (PowerShell)**
 
 ```powershell
-docker run -d --gpus all -p 8102:8000 --name kokoro-server --restart unless-stopped `
-    -v "<MODELS_DIR>\kokoro:/models/kokoro" `
+docker run --gpus all -p 8102:8000 --name kokoro-server --restart unless-stopped `
+    -v "<MODELS_DIR>/models/kokoro:/models/kokoro" `
     kokoro-tts
 ```
 
 **Linux**
 
 ```bash
-docker run -d --gpus all -p 8102:8000 --name kokoro-server --restart unless-stopped \
-    -v "<MODELS_DIR>/kokoro:/models/kokoro" \
+docker run --gpus all -p 8102:8000 --name kokoro-server --restart unless-stopped \
+    -v "<MODELS_DIR>/models/kokoro:/models/kokoro" \
+    kokoro-tts
+```
+
+**Example**
+
+```bash
+sudo docker run --gpus all -p 8102:8000 --name kokoro-server --restart unless-stopped \
+    -v "/home/girafai/models/kokoro:/models/kokoro" \
     kokoro-tts
 ```
 
 ## Wait until it is ready
 
-On the first start the container downloads the model and all voices, which can take a few minutes. You can follow the progress with:
+On the first start the container downloads the model and all voices, which can take a few minutes. The progress is shown in the terminal where you started the container.
 
-```
-docker logs -f kokoro-server
-```
-
-Near the top of the log you should see the GPU that is used:
+Near the top of the output you should see the GPU that is used:
 
 ```
 Using GPU: <your GPU name>
@@ -101,7 +107,7 @@ To confirm the model was stored in the right place, check that `<MODELS_DIR>/kok
 ## Health check
 
 ```
-curl http://localhost:8001/health
+curl http://localhost:8102/health
 ```
 
 Expected response:
@@ -176,10 +182,14 @@ Then call `http://<host-ip>:8102/v1/audio/speech` from the other device. You may
 ## Managing the container
 
 ```
-docker stop kokoro-server       # stop
-docker start kokoro-server      # start again
-docker logs -f kokoro-server    # view logs
+docker stop kokoro-server           # stop (or press Ctrl+C in the terminal running it)
+docker start -a kokoro-server       # start again and show the logs in this terminal
+docker logs -f kokoro-server        # follow the logs from another terminal
 ```
+
+Use `docker start -a` (the `-a` attaches the terminal). Plain `docker start` starts the container in the background without showing any output.
+
+Because of `--restart unless-stopped`, Docker starts the container again automatically after a reboot or a crash, in the background and without a terminal attached. Use `docker logs -f kokoro-server` to see its output. After a manual `docker stop` it stays stopped until you start it again.
 
 ### Rebuild after code changes
 
@@ -203,11 +213,11 @@ Then run the `docker run` command again. The model is **not** downloaded again, 
 ## Troubleshooting
 
 **The container stops with `No CUDA GPU available`**
-The container cannot see the GPU. Because `--restart unless-stopped` is set, it will keep restarting until this is fixed. Check that:
+The container cannot see the GPU and exits with this error. Because `--restart unless-stopped` is set, Docker keeps restarting it until this is fixed, so the error repeats. Stop it with `docker stop kokoro-server` while you fix the problem, and see the error with `docker logs kokoro-server`. Check that:
 - `--gpus all` is in the `docker run` command
 - `nvidia-smi` works on the host
 - Docker Desktop uses the WSL 2 backend (Windows) or the NVIDIA Container Toolkit is installed and Docker was restarted (Linux)
-- `docker exec kokoro-server nvidia-smi` lists your GPU
+- `docker run --rm --gpus all kokoro-tts nvidia-smi` lists your GPU
 
 **`CUDA error` or driver version errors on start**
 The CUDA version in the Dockerfile (`cu126`) needs a recent enough NVIDIA driver. Update the driver, or change `cu126` in the Dockerfile to a version your driver supports and rebuild.
@@ -216,7 +226,7 @@ The CUDA version in the Dockerfile (`cu126`) needs a recent enough NVIDIA driver
 Both services share the same GPU memory. Kokoro keeps its model in VRAM for as long as it runs and is never moved off the GPU. If there is not enough free VRAM when Kokoro starts, it fails with a CUDA out-of-memory error. Start Kokoro first so it reserves its share before Qwen loads, and check actual usage with `nvidia-smi`.
 
 **`/health` does not respond right after starting**
-The model is probably still downloading or loading. Check `docker logs -f kokoro-server` and wait for `Kokoro ready.`
+The model is probably still downloading or loading. Check the terminal output (or `docker logs -f kokoro-server` if the container was started automatically) and wait for `Kokoro ready.`
 
 **The model is downloaded again after every rebuild**
 The volume is missing or points to the wrong path. Check that the `-v` flag is in the `docker run` command and that `<MODELS_DIR>/kokoro/hub` contains files after the first start.
@@ -228,7 +238,7 @@ Another container (for example the Qwen service) is using the port. Change the h
 The build needs internet access. Check your connection and run `docker build -t kokoro-tts .` again.
 
 **Download fails on the first start**
-The container needs internet access on the first start. Check your connection and run `docker restart kokoro-server`. Files that were already downloaded are kept.
+The container needs internet access on the first start. Check your connection and run `docker start -a kokoro-server`. Files that were already downloaded are kept.
 
 **Errors with `HF_HUB_OFFLINE=1`**
 The cache is incomplete. Remove the flag, restart the container, wait for `Kokoro ready.` and then add it again.
