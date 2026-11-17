@@ -19,17 +19,24 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 
 var dataSourceBuilder = new NpgsqlDataSourceBuilder(connectionString);
 dataSourceBuilder.MapEnum<IdType>("id_type");
+dataSourceBuilder.MapEnum<OriginType>("origin_type");
 var dataSource = dataSourceBuilder.Build();
 
 builder.Services.AddControllers();
 builder.Services.AddSingleton<IQueueService, QueueService>();
 builder.Services.AddHostedService<QueueHostedService>();
+builder.Services.AddSingleton<ITtsQueueService, TtsQueueService>();
+builder.Services.AddHostedService<TtsQueueHostedService>();
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(dataSource, npgsqlOptions =>
-        npgsqlOptions.MapEnum<IdType>("id_type")));
+    {
+        npgsqlOptions.MapEnum<IdType>("id_type");
+        npgsqlOptions.MapEnum<OriginType>("origin_type");
+    }));
 builder.Services.AddScoped<ImageService>();
 builder.Services.AddScoped<LlmService>();
 builder.Services.AddScoped<ImageGenService>();
+builder.Services.AddScoped<TtsService>();
 builder.Services.AddOpenApi();
 builder.Services.AddAiClients();
 
@@ -40,7 +47,6 @@ using (IServiceScope scope = app.Services.CreateScope())
     AppDbContext dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     await dbContext.Database.EnsureCreatedAsync();
 }
-
 
 app.MapOpenApi();
 app.UseHttpsRedirection();
