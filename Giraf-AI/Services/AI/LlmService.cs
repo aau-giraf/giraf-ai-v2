@@ -6,12 +6,11 @@ namespace Giraf_AI.Services.AI;
 
 public class LlmService
 {
+    private readonly HttpClient _llmClient;
     public LlmService(IHttpClientFactory httpClientFactory)
     {
         _llmClient = httpClientFactory.CreateClient("Llm");
     }
-
-    private readonly HttpClient _llmClient;
 
     public async Task<string> GenerateLlmAsync(string request, string path)
     {
