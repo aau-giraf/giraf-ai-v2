@@ -89,12 +89,12 @@ public sealed class TtsQueueHostedService(
                 {
                     Prompt = entry.Prompt,
                     TtsID = entry.TtsId,
-                    Origin = entry.Origin switch
+                    Lang = entry.Lang switch
                     {
-                        OriginType.vta => "vta",
-                        OriginType.fp => "fp",
+                        LangType.da => "da",
+                        LangType.en => "en",
                         _ => throw new InvalidOperationException(
-                            $"Queue entry {entry.QueueId} has an unsupported origin type.")
+                            $"Queue entry {entry.QueueId} has an unsupported language.")
                     }
                 }
             };

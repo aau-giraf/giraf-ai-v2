@@ -8,11 +8,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Giraf_AI.Services.Queue;
 
-public sealed class QueueHostedService(
+public sealed class ImgQueueHostedService(
     IQueueService queueService,
     IServiceScopeFactory scopeFactory,
     IHttpClientFactory httpClientFactory,
-    ILogger<QueueHostedService> logger) : BackgroundService
+    ILogger<ImgQueueHostedService> logger) : BackgroundService
 {
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {

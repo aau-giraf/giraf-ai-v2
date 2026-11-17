@@ -19,19 +19,19 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 
 var dataSourceBuilder = new NpgsqlDataSourceBuilder(connectionString);
 dataSourceBuilder.MapEnum<IdType>("id_type");
-dataSourceBuilder.MapEnum<OriginType>("origin_type");
+dataSourceBuilder.MapEnum<LangType>("language");
 var dataSource = dataSourceBuilder.Build();
 
 builder.Services.AddControllers();
-builder.Services.AddSingleton<IQueueService, QueueService>();
-builder.Services.AddHostedService<QueueHostedService>();
+builder.Services.AddSingleton<IQueueService, ImgQueueService>();
+builder.Services.AddHostedService<ImgQueueHostedService>();
 builder.Services.AddSingleton<ITtsQueueService, TtsQueueService>();
 builder.Services.AddHostedService<TtsQueueHostedService>();
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(dataSource, npgsqlOptions =>
     {
         npgsqlOptions.MapEnum<IdType>("id_type");
-        npgsqlOptions.MapEnum<OriginType>("origin_type");
+        npgsqlOptions.MapEnum<LangType>("language");
     }));
 builder.Services.AddScoped<ImageService>();
 builder.Services.AddScoped<LlmService>();

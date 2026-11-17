@@ -12,6 +12,6 @@ public class TtsRequest
     public required int TtsID { get; init; }
 
     [Required]
-    [AllowedValues("vta", "fp")]
-    public required string Origin { get; init; } = string.Empty;
+    [AllowedValues("da", "en")]
+    public required string Lang { get; init; } = string.Empty;
 }

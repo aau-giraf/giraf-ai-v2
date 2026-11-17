@@ -31,11 +31,15 @@ public static class AiClientConfiguration
             client.BaseAddress = new Uri("http://localhost:4500/"); // Placeholder for the GirafCore service URL, replace with actual URL
         });
 
-        services.AddHttpClient("Tts", (provider, client) =>
+        services.AddHttpClient("TtsDa", (provider, client) =>
         {
             var config = provider.GetRequiredService<IConfiguration>();
-            client.BaseAddress = new Uri(config["Tts:BaseUrl"]
-                ?? throw new InvalidOperationException("Tts:BaseUrl is not configured."));
+            client.BaseAddress = new Uri("http://172.25.11.238:8103");
+        });
+        services.AddHttpClient("TtsEn", (provider, client) =>
+        {
+            var config = provider.GetRequiredService<IConfiguration>();
+            client.BaseAddress = new Uri("http://130.225.39.133:8102/");
         });
     }
 }

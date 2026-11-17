@@ -19,4 +19,9 @@
       <_ContentIncludedByDefault Remove="express-stub-server\package.json" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="DTOs\Providers\TtsProviderDa\" />
+      <Folder Include="DTOs\Providers\TtsProviderEn\" />
+    </ItemGroup>
+
 </Project>

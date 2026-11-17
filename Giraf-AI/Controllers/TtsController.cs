@@ -25,11 +25,11 @@ public class TtsController(
             {
                 Prompt = request.Prompt,
                 TtsId = request.TtsID,
-                Origin = request.Origin switch
+                Lang = request.Lang switch
                 {
-                    "vta" => OriginType.vta,
-                    "fp" => OriginType.fp,
-                    _ => throw new InvalidOperationException("The request contains an unsupported origin type.")
+                    "da" => LangType.da,
+                    "en" => LangType.en,
+                    _ => throw new InvalidOperationException("The request contains an unsupported language.")
                 },
                 Received = DateTime.UtcNow
             };

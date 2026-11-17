@@ -48,7 +48,6 @@ public class TtsService(IHttpClientFactory httpClientFactory, IConfiguration con
         {
             Audio = Convert.ToBase64String(stream.ToArray()),
             TtsID = req.TtsID,
-            Origin = req.Origin
         };
     }
 }

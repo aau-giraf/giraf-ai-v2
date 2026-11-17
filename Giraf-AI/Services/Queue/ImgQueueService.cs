@@ -3,7 +3,7 @@ using Giraf_AI.Jobs;
 
 namespace Giraf_AI.Services.Queue;
 
-public class QueueService : IQueueService
+public class ImgQueueService : IQueueService
 {
     private const int Capacity = 1000;
     private readonly Channel<ImageJob> _queue = Channel.CreateBounded<ImageJob>(

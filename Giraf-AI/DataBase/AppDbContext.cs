@@ -1,4 +1,4 @@
-using Giraf_AI.Models;
+﻿using Giraf_AI.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace Giraf_AI.Data;
@@ -16,7 +16,7 @@ public class AppDbContext : DbContext
     {
         // Map the PostgreSQL enum
         modelBuilder.HasPostgresEnum<IdType>("id_type");
-        modelBuilder.HasPostgresEnum<OriginType>("origin_type");
+        modelBuilder.HasPostgresEnum<LangType>("origin_type");
 
         modelBuilder.Entity<ImgGenQueue>(entity =>
         {
@@ -37,7 +37,7 @@ public class AppDbContext : DbContext
             entity.Property(e => e.QueueId).HasColumnName("queue_id").ValueGeneratedOnAdd();
             entity.Property(e => e.Prompt).HasColumnName("prompt").HasMaxLength(500).IsRequired();
             entity.Property(e => e.TtsId).HasColumnName("tts_id").IsRequired();
-            entity.Property(e => e.Origin).HasColumnName("origin").HasColumnType("origin_type").IsRequired();
+            entity.Property(e => e.Lang).HasColumnName("language").HasColumnType("language").IsRequired();
             entity.Property(e => e.Received).HasColumnName("received").IsRequired();
         });
     }
