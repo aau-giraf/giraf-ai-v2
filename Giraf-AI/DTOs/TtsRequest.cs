@@ -12,6 +12,6 @@ public class TtsRequest
     public required int TtsID { get; init; }
 
     [Required]
-    [AllowedValues("da", "en")]
+    [RegularExpression("^(?i)(da|en)$")] // Ensures that the value is either "da" or "en", case-insensitive
     public required string Lang { get; init; } = string.Empty;
 }

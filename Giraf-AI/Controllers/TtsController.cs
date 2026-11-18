@@ -25,7 +25,7 @@ public class TtsController(
             {
                 Prompt = request.Text,
                 TtsId = request.TtsID,
-                Lang = request.Lang switch
+                Lang = request.Lang.ToLowerInvariant() switch
                 {
                     "da" => LangType.da,
                     "en" => LangType.en,
