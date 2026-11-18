@@ -1,8 +1,11 @@
 ﻿Database setup
 
 ```postgresql
+DROP TABLE imggen_queue;
+DROP TABLE tts_queue;
+
 CREATE TYPE id_type AS ENUM ('citizen_id', 'class_id', 'organization_id');
-CREATE TYPE origin_type AS ENUM ('vta', 'fp');
+CREATE TYPE language AS ENUM ('da', 'en');
 
 CREATE TABLE "imggen_queue" (
     queue_id    SERIAL PRIMARY KEY NOT NULL,
@@ -14,10 +17,9 @@ CREATE TABLE "imggen_queue" (
 );
 
 CREATE TABLE "tts_queue" (
-    queue_id	SERIAL PRIMARY KEY NOT NULL,
-    prompt      VARCHAR(500) NOT NULL,
-    tts_id      INTEGER NOT NULL,
-    origin      origin_type NOT NULL,
-    received    TIMESTAMP NOT NULL
+     prompt      VARCHAR(500) NOT NULL,
+     tts_id      INTEGER NOT NULL,
+     language    language NOT NULL,
+     received    TIMESTAMP NOT NULL
 ); 
 ```

@@ -7,18 +7,18 @@ namespace Giraf_AI.Services.AI;
 
 public class ImageGenService
 {
+    private readonly HttpClient _imageGenerationClient;
+    
     public ImageGenService(IHttpClientFactory httpClientFactory)
     {
         _imageGenerationClient = httpClientFactory.CreateClient("ImageGeneration");
     }
     
-    private readonly HttpClient _imageGenerationClient;
-    
     public async Task<string> GenerateImageData(string request)
     {
         var imageGenerateRequest = new ImageProviderRequest
         {
-            Prompt = new ReadFromFile(request, false, "Prompts/IMGGEN/IMG_Master.txt").Text,
+            Prompt = new PromptBuilder(request, false, "Prompts/IMGGEN/IMG_Master.txt").Text,
             NegativePrompt = await File.ReadAllTextAsync("Prompts/IMGGEN/IMG_Negative.txt"),
             Size = "512x512",
             NumberImages = 1,

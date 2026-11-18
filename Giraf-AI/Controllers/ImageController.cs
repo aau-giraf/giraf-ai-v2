@@ -46,6 +46,7 @@ public class ImageGenerationController(
                 QueueId = queueEntry.QueueId
             };
             await queueService.AddToQueue(job, cancellationToken);
+            await job.Completion.Task.WaitAsync(cancellationToken);
             return Accepted();
         }
         catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)

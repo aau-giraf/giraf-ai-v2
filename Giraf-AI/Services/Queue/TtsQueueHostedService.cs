@@ -4,15 +4,17 @@ using Giraf_AI.Data;
 using Giraf_AI.DTOs;
 using Giraf_AI.Jobs;
 using Giraf_AI.Models;
+using Giraf_AI.Services;
 using Microsoft.EntityFrameworkCore;
 
 namespace Giraf_AI.Services.Queue;
 
-public sealed class QueueHostedService(
-    IQueueService queueService,
+public sealed class TtsQueueHostedService(
+    ITtsQueueService queueService,
     IServiceScopeFactory scopeFactory,
     IHttpClientFactory httpClientFactory,
-    ILogger<QueueHostedService> logger) : BackgroundService
+    IConfiguration configuration,
+    ILogger<TtsQueueHostedService> logger) : BackgroundService
 {
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
@@ -20,7 +22,7 @@ public sealed class QueueHostedService(
 
         while (!stoppingToken.IsCancellationRequested)
         {
-            ImageJob job;
+            TtsJob job;
 
             try
             {
@@ -34,14 +36,14 @@ public sealed class QueueHostedService(
             try
             {
                 using IServiceScope scope = scopeFactory.CreateScope();
-                ImageService imageService = scope.ServiceProvider
-                    .GetRequiredService<ImageService>();
-                AppDbContext dbContext = scope.ServiceProvider
-                    .GetRequiredService<AppDbContext>();
+                TtsService ttsService = scope.ServiceProvider.GetRequiredService<TtsService>();
+                AppDbContext dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 
-                ImageResult result = await imageService.ProcessImageRequestAsync(job.Request);
+                TtsResult result = await ttsService.ProcessTtsRequestAsync(job.Request);
                 var girafCoreClient = httpClientFactory.CreateClient("GirafCore");
-                using var response = await girafCoreClient.PostAsJsonAsync("images/", result, stoppingToken);
+                // TODO: Confirm CORE callback path and JSON contract with the CORE team.
+                using var response = await girafCoreClient.PostAsJsonAsync(
+                    configuration["Tts:CoreCallbackPath"] ?? "tts/", result, stoppingToken);
                 response.EnsureSuccessStatusCode();
                 if (response.StatusCode != HttpStatusCode.Accepted)
                 {
@@ -49,20 +51,20 @@ public sealed class QueueHostedService(
                         $"GIRAF CORE returned {(int)response.StatusCode}; expected 202 Accepted.");
                 }
 
-                int deletedRows = await dbContext.ImgGenQueues
-                    .Where(entry => entry.QueueId == job.QueueId)
+                int deletedRows = await dbContext.TtsQueues
+                    .Where(entry => entry.TtsId == job.TtsId)
                     .ExecuteDeleteAsync(stoppingToken);
                 if (deletedRows != 1)
                 {
                     throw new InvalidOperationException(
-                        $"Expected to delete queue entry {job.QueueId}, but deleted {deletedRows} rows.");
+                        $"Expected to delete TTS entry {job.TtsId}, but deleted {deletedRows} rows.");
                 }
 
                 job.Completion.TrySetResult(result);
             }
             catch (Exception e)
             {
-                logger.LogError(e, "Failed to process or deliver image job {JobId}.", job.Id);
+                logger.LogError(e, "Failed to process or deliver TTS job {JobId}.", job.Id);
                 job.Completion.TrySetException(e);
             }
         }
@@ -73,36 +75,34 @@ public sealed class QueueHostedService(
         using IServiceScope scope = scopeFactory.CreateScope();
         AppDbContext dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 
-        List<ImgGenQueue> pendingEntries = await dbContext.ImgGenQueues
+        List<TtsQueue> pendingEntries = await dbContext.TtsQueues
             .AsNoTracking()
-            .OrderBy(entry => entry.QueueId)
+            .OrderBy(entry => entry.TtsId)
             .ToListAsync(cancellationToken);
 
-        foreach (ImgGenQueue entry in pendingEntries)
+        foreach (TtsQueue entry in pendingEntries)
         {
-            var job = new ImageJob
+            var job = new TtsJob
             {
-                QueueId = entry.QueueId,
-                Request = new ImageRequest
+                TtsId = entry.TtsId,
+                Request = new TtsRequest
                 {
-                    Prompt = entry.Prompt,
-                    ImgID = entry.ImageId,
-                    MapID = entry.MapId,
-                    IdType = entry.IdType switch
+                    Text = entry.Prompt,
+                    TtsID = entry.TtsId,
+                    Lang = entry.Lang switch
                     {
-                        IdType.citizen_id => "CitizenID",
-                        IdType.class_id => "ClassID",
-                        IdType.organization_id => "OrganizationID",
+                        LangType.da => "da",
+                        LangType.en => "en",
                         _ => throw new InvalidOperationException(
-                            $"Queue entry {entry.QueueId} has an unsupported ID type.")
+                            $"TTS entry {entry.TtsId} has an unsupported language.")
                     }
                 }
             };
 
             await queueService.AddToQueue(job, cancellationToken);
             logger.LogInformation(
-                "Restored pending image job for queue entry {QueueId}.",
-                entry.QueueId);
+                "Restored pending TTS job for TTS entry {TtsId}.",
+                entry.TtsId);
         }
     }
 }
