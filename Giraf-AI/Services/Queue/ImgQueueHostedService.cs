@@ -106,7 +106,8 @@ public sealed class ImgQueueHostedService(
                         IdType.organization_id => "OrganizationID",
                         _ => throw new InvalidOperationException(
                             $"Queue entry {entry.QueueId} has an unsupported ID type.")
-                    }
+                    },
+                    OriginApp = entry.OriginApp.Trim().ToLowerInvariant()
                 }
             };
 

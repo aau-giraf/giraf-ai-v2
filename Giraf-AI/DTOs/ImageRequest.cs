@@ -20,7 +20,13 @@ public class ImageRequest
     public required int MapID { get; init; }
 
     [Required(ErrorMessage = "ID type is required")]
-    [AllowedValues("CitizenID", "ClassID", "OrganizationID",
-        ErrorMessage = "IdType must be one of: CitizenID, ClassID, OrganizationID")]
+    [RegularExpression("^(?i)(citizenid|classid|organizationid)$", 
+        ErrorMessage = "IdType must be either 'citizenid', 'classid', or 'organizationid', case-insensitive")]
     public required string IdType { get; init; } = string.Empty;
+    
+    [Required(ErrorMessage = "Origin app is required")]
+    [RegularExpression("^(?i)(vta|fp)$", 
+        ErrorMessage = "OriginApp must be either 'vta' or 'fp', case-insensitive")]
+    [MaxLength(10, ErrorMessage = "OriginApp cannot exceed 10 characters")]
+    public required string OriginApp { get; init; } = string.Empty;
 }

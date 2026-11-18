@@ -13,6 +13,7 @@ CREATE TABLE "imggen_queue" (
     image_id    VARCHAR(100) NOT NULL,
     map_id      INTEGER NOT NULL,
     id_type     id_type NOT NULL,
+    origin_app  VARCHAR(10) NOT NULL,
     received    TIMESTAMP NOT NULL
 );
 

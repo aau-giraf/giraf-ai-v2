@@ -19,21 +19,25 @@ public class TtsService
     public async Task<TtsResult> ProcessTtsRequestAsync(TtsRequest req)
     {
 
-        if (req.Lang == "da")
+        var language = req.Lang?.Trim().ToLowerInvariant() ?? string.Empty;
+
+        if (language == "da")
         {
             byte[] rawAudio = await _TtsGenServiceDa.GenerateTtsAsyncDa(req.Text);
             return new TtsResult
             {
                 Audio = Convert.ToBase64String(CreateWaveFile(rawAudio)),
+                Text = req.Text,
                 TtsID = req.TtsID,
             };
         }
-        else if (req.Lang == "en")
+        else if (language == "en")
         {
             byte[] rawAudio = await _TtsGenServiceEn.GenerateTtsAsyncEn(req.Text);
             return new TtsResult
             {
                 Audio = Convert.ToBase64String(rawAudio),
+                Text = req.Text,
                 TtsID = req.TtsID,
             };
         }

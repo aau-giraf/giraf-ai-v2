@@ -45,6 +45,26 @@ function decodeBase64(value, fieldName) {
   return Buffer.from(value, "base64");
 }
 
+function sanitizeFilename(value, fallback) {
+  const cleaned = String(value ?? "")
+    .replace(/[<>:"/\\|?*\u0000-\u001F]/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
+
+  return cleaned || fallback;
+}
+
+function firstThreeWords(value) {
+  const words = sanitizeFilename(value, "tts")
+    .replace(/[^\p{L}\p{N}\s'-]/gu, "")
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 3);
+
+  return sanitizeFilename(words.join(" "), "tts");
+}
+
 const server = http.createServer(async (req, res) => {
   if (
     req.method !== "POST" ||
@@ -70,9 +90,22 @@ const server = http.createServer(async (req, res) => {
         );
       }
 
-      const wavPath = path.join(OUTPUT_DIR, `${timestamp}.wav`);
+      const prefix = firstThreeWords(
+        json.text ?? json.Text ?? json.prompt ?? json.Prompt ?? json.input
+      );
+      const jsonPath = path.join(
+        OUTPUT_DIR,
+        `${prefix} - ${timestamp}.txt`
+      );
+      const wavPath = path.join(
+        OUTPUT_DIR,
+        `${prefix} - ${timestamp}.wav`
+      );
+
+      await fs.promises.writeFile(jsonPath, body);
       await fs.promises.writeFile(wavPath, audio);
 
+      console.log(`Saved TTS JSON as ${jsonPath}`);
       console.log(`Saved WAV as ${wavPath} (${audio.length} bytes)`);
     } else {
       const png = decodeBase64(
@@ -94,8 +127,22 @@ const server = http.createServer(async (req, res) => {
         throw new Error("Decoded image does not have a PNG signature");
       }
 
-      const pngPath = path.join(OUTPUT_DIR, `${timestamp}.png`);
+      const prefix = sanitizeFilename(
+        json.titleDa ?? json.TitleDa ?? json.titleDA ?? json.TitleDA,
+        "untitled"
+      );
+      const jsonPath = path.join(
+        OUTPUT_DIR,
+        `${prefix} - ${timestamp}.txt`
+      );
+      const pngPath = path.join(
+        OUTPUT_DIR,
+        `${prefix} - ${timestamp}.png`
+      );
+
+      await fs.promises.writeFile(jsonPath, body);
       await fs.promises.writeFile(pngPath, png);
+      console.log(`Saved image JSON as ${jsonPath}`);
       console.log(`Saved PNG as ${pngPath} (${png.length} bytes)`);
     }
 

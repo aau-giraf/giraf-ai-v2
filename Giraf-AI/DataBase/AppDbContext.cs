@@ -16,8 +16,6 @@ public class AppDbContext : DbContext
     {
         // Map the PostgreSQL enum
         modelBuilder.HasPostgresEnum<IdType>("id_type");
-        modelBuilder.HasPostgresEnum<LangType>("origin_type");
-
         modelBuilder.Entity<ImgGenQueue>(entity =>
         {
             entity.ToTable("imggen_queue");
@@ -27,6 +25,7 @@ public class AppDbContext : DbContext
             entity.Property(e => e.ImageId).HasColumnName("image_id").HasMaxLength(100).IsRequired();
             entity.Property(e => e.MapId).HasColumnName("map_id").IsRequired();
             entity.Property(e => e.IdType).HasColumnName("id_type").HasColumnType("id_type").IsRequired();
+            entity.Property(e => e.OriginApp).HasColumnName("origin_app").HasMaxLength(10).IsRequired();
             entity.Property(e => e.Received).HasColumnName("received").IsRequired();
         });
 

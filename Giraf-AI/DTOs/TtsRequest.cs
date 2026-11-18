@@ -8,10 +8,11 @@ public class TtsRequest
     [MaxLength(500, ErrorMessage = "Prompt cannot exceed 500 characters")]
     public required string Text { get; init; } = string.Empty;
 
+    [Required(ErrorMessage = "TtsID is required")]
     [Range(1, int.MaxValue, ErrorMessage = "TtsID must be a positive integer")]
     public required int TtsID { get; init; }
 
-    [Required]
-    [RegularExpression("^(?i)(da|en)$")] // Ensures that the value is either "da" or "en", case-insensitive
-    public required string Lang { get; init; } = string.Empty;
+    [RegularExpression("^(?i)(da|en)$", 
+        ErrorMessage = "Lang must be either 'da' or 'en', case-insensitive")] // Ensures that the value is either "da" or "en", case-insensitive
+    public required string? Lang { get; init; } = string.Empty;
 }
