@@ -19,7 +19,7 @@ public class TtsGenServiceEn
             Input = request,
             Accent = "a",
             Voice = "f",
-            ResponseFormat = "wav",
+            ResponseFormat = "wav"
         };
         using var response = await _TtsGenerationClient.PostAsJsonAsync("v1/audio/speech", TtsGenerateRequestEn);
         response.EnsureSuccessStatusCode();

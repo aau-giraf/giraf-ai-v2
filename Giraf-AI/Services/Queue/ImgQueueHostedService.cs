@@ -60,6 +60,17 @@ public sealed class ImgQueueHostedService(
 
                 job.Completion.TrySetResult(result);
             }
+            catch (ContentFilterViolationException e)
+            {
+                using IServiceScope scope = scopeFactory.CreateScope();
+                AppDbContext dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+
+                await dbContext.ImgGenQueues
+                    .Where(entry => entry.QueueId == job.QueueId)
+                    .ExecuteDeleteAsync(stoppingToken);
+
+                job.Completion.TrySetException(e);
+            }
             catch (Exception e)
             {
                 logger.LogError(e, "Failed to process or deliver image job {JobId}.", job.Id);
