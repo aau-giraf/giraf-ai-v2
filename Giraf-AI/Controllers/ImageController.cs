@@ -22,17 +22,33 @@ public class ImageGenerationController(
     {
         try
         {
+            var originApp = request.OriginApp.Trim().ToLowerInvariant();
+            var normalizedRequest = new ImageRequest
+            {
+                Prompt = request.Prompt,
+                ImgID = request.ImgID,
+                MapID = request.MapID,
+                IdType = request.IdType,
+                OriginApp = originApp
+            };
+
             var queueEntry = new ImgGenQueue
             {
                 Prompt = request.Prompt,
                 ImageId = request.ImgID,
                 MapId = request.MapID,
-                IdType = request.IdType switch
+                IdType = request.IdType.Trim().ToLowerInvariant() switch
                 {
-                    "CitizenID" => IdType.citizen_id,
-                    "ClassID" => IdType.class_id,
-                    "OrganizationID" => IdType.organization_id,
+                    "citizenid" => IdType.citizen_id,
+                    "classid" => IdType.class_id,
+                    "organizationid" => IdType.organization_id,
                     _ => throw new InvalidOperationException("The request contains an unsupported ID type.")
+                },
+                OriginApp = originApp switch
+                {
+                    "vta" => "vta",
+                    "fp" => "fp",
+                    _ => throw new InvalidOperationException("The request contains an unsupported origin app.")
                 },
                 Received = DateTime.UtcNow
             };
@@ -42,10 +58,11 @@ public class ImageGenerationController(
 
             var job = new ImageJob
             {
-                Request = request,
+                Request = normalizedRequest,
                 QueueId = queueEntry.QueueId
             };
             await queueService.AddToQueue(job, cancellationToken);
+            await job.Completion.Task.WaitAsync(cancellationToken);
             return Accepted();
         }
         catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)

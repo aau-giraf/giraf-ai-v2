@@ -8,11 +8,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Giraf_AI.Services.Queue;
 
-public sealed class QueueHostedService(
+public sealed class ImgQueueHostedService(
     IQueueService queueService,
     IServiceScopeFactory scopeFactory,
     IHttpClientFactory httpClientFactory,
-    ILogger<QueueHostedService> logger) : BackgroundService
+    ILogger<ImgQueueHostedService> logger) : BackgroundService
 {
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
@@ -60,6 +60,17 @@ public sealed class QueueHostedService(
 
                 job.Completion.TrySetResult(result);
             }
+            catch (ContentFilterViolationException e)
+            {
+                using IServiceScope scope = scopeFactory.CreateScope();
+                AppDbContext dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+
+                await dbContext.ImgGenQueues
+                    .Where(entry => entry.QueueId == job.QueueId)
+                    .ExecuteDeleteAsync(stoppingToken);
+
+                job.Completion.TrySetException(e);
+            }
             catch (Exception e)
             {
                 logger.LogError(e, "Failed to process or deliver image job {JobId}.", job.Id);
@@ -95,7 +106,8 @@ public sealed class QueueHostedService(
                         IdType.organization_id => "OrganizationID",
                         _ => throw new InvalidOperationException(
                             $"Queue entry {entry.QueueId} has an unsupported ID type.")
-                    }
+                    },
+                    OriginApp = entry.OriginApp.Trim().ToLowerInvariant()
                 }
             };
 

@@ -8,7 +8,6 @@ namespace Giraf_AI.DTOs;
 /// </summary>
 public class ImageResult
 {
-    public required string ImageData { get; init; } = string.Empty;
     public required string TitleDa { get; init; } = string.Empty;
     public required string TitleEn { get; init; } = string.Empty;
     public required string ImgID { get; init; } = string.Empty;
@@ -20,4 +19,5 @@ public class ImageResult
 
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public int? OrganizationID { get; init; }
+    public required string ImageData { get; init; } = string.Empty;
 }
