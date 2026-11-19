@@ -32,6 +32,11 @@ public class LlmService : ILlmService
 
         var result = await response.Content.ReadFromJsonAsync<LlmProviderResponse>()
                      ?? throw new InvalidOperationException("Ollama returned an empty response.");
+        
+        if (result == null)
+        {
+            throw new InvalidOperationException("Image Generator returned an empty response.");
+        }
 
         return result.LlmResponse;
     }

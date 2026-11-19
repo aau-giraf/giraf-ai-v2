@@ -15,8 +15,10 @@ public class LlmServiceMock : ILlmService
         {
             "Prompts/TRANSLATOR/Master.txt" => TranslationResponse,
             "Prompts/NSFW/Master.txt" => ContentFilterResponse,
-            "Prompts/TITLE/TitleDa.txt" => TitleDaResponse,
-            "Prompts/TITLE/TitleEn.txt" => TitleEnResponse,
+            "Prompts/TITLE/TitleDaVTA.txt" => TitleDaResponse,
+            "Prompts/TITLE/TitleDaFP.txt" => TitleDaResponse,
+            "Prompts/TITLE/TitleEnVTA.txt" => TitleEnResponse,
+            "Prompts/TITLE/TitleEnFP.txt" => TitleEnResponse,
             _ => throw new ArgumentException("Unknown master prompt")
         };
 

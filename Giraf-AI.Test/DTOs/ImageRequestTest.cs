@@ -23,7 +23,8 @@ public class ImageRequestTest
             Prompt = "A Cat", 
             ImgID = "123", 
             MapID = 1,  
-            IdType = "CitizenID"
+            IdType = "CitizenID",
+            OriginApp = "fp"
         };
         
         var results = Validate(dto);
@@ -42,7 +43,8 @@ public class ImageRequestTest
             Prompt = prompt, 
             ImgID = "123", 
             MapID = 1,  
-            IdType = "CitizenID"
+            IdType = "CitizenID",
+            OriginApp = "fp"
         };
         
         var results = Validate(dto);
@@ -61,7 +63,8 @@ public class ImageRequestTest
             Prompt = new string('a', length),
             ImgID = "123",
             MapID = 1,
-            IdType = "CitizenID"
+            IdType = "CitizenID",
+            OriginApp = "fp"
         };
 
         var results = Validate(dto);
@@ -79,7 +82,8 @@ public class ImageRequestTest
             Prompt = new string('a', length),
             ImgID = "123",
             MapID = 1,
-            IdType = "CitizenID"
+            IdType = "CitizenID",
+            OriginApp = "fp"
         };
 
         var results = Validate(dto);
@@ -98,7 +102,8 @@ public class ImageRequestTest
             Prompt = "A Cat", 
             ImgID = imgID, 
             MapID = 1,  
-            IdType = "CitizenID"
+            IdType = "CitizenID",
+            OriginApp = "fp"
         };
         
         var results = Validate(dto);
@@ -117,7 +122,8 @@ public class ImageRequestTest
             Prompt = "A Cat",
             ImgID = new string('a', length),
             MapID = 1,
-            IdType = "CitizenID"
+            IdType = "CitizenID",
+            OriginApp = "fp"
         };
 
         var results = Validate(dto);
@@ -135,7 +141,8 @@ public class ImageRequestTest
             Prompt = "A Cat",
             ImgID = new string('a', length),
             MapID = 1,
-            IdType = "CitizenID"
+            IdType = "CitizenID",
+            OriginApp = "fp"
         };
 
         var results = Validate(dto);
@@ -154,7 +161,8 @@ public class ImageRequestTest
             Prompt = "A Cat", 
             ImgID = "123", 
             MapID = 1,  
-            IdType = idType
+            IdType = idType,
+            OriginApp = "fp"
         };
         
         var results = Validate(dto);
@@ -179,7 +187,8 @@ public class ImageRequestTest
             Prompt = "A Cat",
             ImgID = "123",
             MapID = 1,
-            IdType = idType
+            IdType = idType,
+            OriginApp = "fp"
         };
 
         var results = Validate(dto);
@@ -198,7 +207,8 @@ public class ImageRequestTest
             Prompt = "A Cat",
             ImgID = "123",
             MapID = 1,
-            IdType = idType
+            IdType = idType,
+            OriginApp = "fp"
         };
 
         var results = Validate(dto);
@@ -206,7 +216,7 @@ public class ImageRequestTest
         Assert.Contains(results, r => r.MemberNames.Contains(nameof(ImageRequest.IdType)));
     }
     
-    /*[Theory]
+    [Theory]
     [InlineData("VTA")]
     [InlineData("vta")]
     [InlineData("Vta")]
@@ -227,45 +237,10 @@ public class ImageRequestTest
         var results = Validate(dto);
 
         Assert.DoesNotContain(results, r => r.MemberNames.Contains(nameof(ImageRequest.IdType)));
-    }*/
-    
-    [Theory]
-    [InlineData(9)]
-    [InlineData(10)]
-    public void OriginApp_AtOrBelowMax_IsValid(int length)
-    {
-        var dto = new ImageRequest
-        {
-            Prompt = "A Cat", 
-            ImgID = "123", 
-            MapID = 1,  
-            IdType = "CitizenID",
-        };
-
-        var results = Validate(dto);
-
-        Assert.DoesNotContain(results, r => r.MemberNames.Contains(nameof(ImageRequest.ImgID)));
-    }
-
-    [Theory]
-    [InlineData(11)]
-    [InlineData(100)]
-    public void OriginApp_AboveMax_IsInvalid(int length)
-    {
-        var dto = new ImageRequest
-        {
-            Prompt = "A Cat",
-            ImgID = new string('a', length),
-            MapID = 1,
-            IdType = "CitizenID"
-        };
-
-        var results = Validate(dto);
-
-        Assert.Contains(results, r => r.MemberNames.Contains(nameof(ImageRequest.ImgID)));
     }
     
-    /*[Theory]
+    
+    [Theory]
     [InlineData("vtafp")]
     [InlineData("fpfp")]
     [InlineData("vta ")]
@@ -283,6 +258,6 @@ public class ImageRequestTest
 
         var results = Validate(dto);
 
-        Assert.Contains(results, r => r.MemberNames.Contains(nameof(ImageRequest.ImgID)));
-    }*/
+        Assert.Contains(results, r => r.MemberNames.Contains(nameof(ImageRequest.OriginApp)));
+    }
 }

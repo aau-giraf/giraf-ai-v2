@@ -19,7 +19,8 @@ public class ImageServiceTest
             Prompt = "A Cat",
             ImgID = "1234",
             IdType = "CitizenID",
-            MapID = 123
+            MapID = 123,
+            OriginApp = "fp"
         });
 
         Assert.Equal("image_data_base64_encoded", result.ImageData);
@@ -46,7 +47,8 @@ public class ImageServiceTest
                 Prompt = "A Cat",
                 ImgID = "1234",
                 IdType = "CitizenID",
-                MapID = 123
+                MapID = 123,
+                OriginApp = "fp"
             }));
 
         Assert.IsType<ContentFilterViolationException>(exception);
@@ -72,7 +74,8 @@ public class ImageServiceTest
             Prompt = "A Cat",
             ImgID = "1234",
             IdType = "CitizenID",
-            MapID = 123
+            MapID = 123,
+            OriginApp = "fp"
         };
         
         // Act & Assert
@@ -109,7 +112,8 @@ public class ImageServiceTest
                 Prompt = "A Cat",
                 ImgID = "1234",
                 IdType = "CitizenID",
-                MapID = 123
+                MapID = 123,
+                OriginApp = "fp"
             }));
     }
     
@@ -128,7 +132,8 @@ public class ImageServiceTest
             Prompt = "A Cat",
             ImgID = "1234",
             IdType = "CitizenID",
-            MapID = 123 
+            MapID = 123,
+            OriginApp = "fp"
         }));
     }
     
