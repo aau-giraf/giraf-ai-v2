@@ -1,6 +1,6 @@
 ﻿using System.Net;
 using Giraf_AI.DTOs.Providers.LlmProvider;
-using Giraf_AI.Test.Helpers;
+using Giraf_AI.Test.TestHelpers;
 
 namespace Giraf_AI.Test.Services;
 

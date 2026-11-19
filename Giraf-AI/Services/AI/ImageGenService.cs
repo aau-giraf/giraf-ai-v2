@@ -18,7 +18,7 @@ public class ImageGenService : IImageGenService
     {
         var imageGenerateRequest = new ImageProviderRequest
         {
-            Prompt = new ReadFromFile(request, false, "Prompts/IMGGEN/IMG_Master.txt").Text,
+            Prompt = new PromptBuilder(request, false, "Prompts/IMGGEN/IMG_Master.txt").Text,
             NegativePrompt = await File.ReadAllTextAsync("Prompts/IMGGEN/IMG_Negative.txt"),
             Size = "512x512",
             NumberImages = 1,

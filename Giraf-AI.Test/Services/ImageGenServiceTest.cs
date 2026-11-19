@@ -2,7 +2,7 @@
 using System.Net.Http.Json;
 using System.Text.Json;
 using Giraf_AI.DTOs.Providers.ImageProvider;
-using Giraf_AI.Test.Helpers;
+using Giraf_AI.Test.TestHelpers;
 
 namespace Giraf_AI.Test.Services;
 

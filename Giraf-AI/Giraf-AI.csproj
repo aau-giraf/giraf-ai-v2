@@ -15,11 +15,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <_ContentIncludedByDefault Remove="express-stub-server\package-lock.json" />
-      <_ContentIncludedByDefault Remove="express-stub-server\package.json" />
-    </ItemGroup>
-
-    <ItemGroup>
         <Content Include="Prompts\**\*.txt">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>

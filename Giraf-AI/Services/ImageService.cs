@@ -5,12 +5,12 @@ namespace Giraf_AI.Services;
 
 public class ImageService : IImageService
 {
-    private readonly LlmService _llmService;
-    private readonly ImageGenService _imageGenerationService;
+    private readonly ILlmService _llmService;
+    private readonly IImageGenService _imageGenerationService;
 
     public ImageService(
-        LlmService llmService,
-        ImageGenService imageGenerationService)
+        ILlmService llmService,
+        IImageGenService imageGenerationService)
     {
         _llmService = llmService;
         _imageGenerationService = imageGenerationService;
@@ -20,11 +20,10 @@ public class ImageService : IImageService
     {
         // Send the prompt to the LLM translator
         var translation = await _llmService.GenerateLlmAsync(req.Prompt, "Prompts/TRANSLATOR/Master.txt");
-        Console.WriteLine(translation);
 
+        
         // Send the translation to the LLM NSFW content filter
         string contentFilter = await _llmService.GenerateLlmAsync(translation, "Prompts/NSFW/Master.txt");
-        Console.WriteLine(contentFilter);
         
         // Sets the isNsfw flag if the output contains inappropriate
         var isNsfw = contentFilter.Contains( 

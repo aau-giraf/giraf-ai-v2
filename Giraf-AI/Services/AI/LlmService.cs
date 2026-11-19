@@ -17,7 +17,7 @@ public class LlmService : ILlmService
     {
         var llmGenerateRequest = new LlmProviderRequest
         {
-            Prompt = new ReadFromFile(request, true, path).Text,
+            Prompt = new PromptBuilder(request, true, path).Text,
             Model = "qwen3.5:9b",
             Think = false,
             Stream = false,

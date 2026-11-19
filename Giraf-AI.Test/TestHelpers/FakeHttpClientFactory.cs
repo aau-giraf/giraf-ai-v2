@@ -1,4 +1,4 @@
-﻿namespace Giraf_AI.Test.Helpers;
+﻿namespace Giraf_AI.Test.TestHelpers;
 
 public class FakeHttpClientFactory(HttpClient client) : IHttpClientFactory
 {
