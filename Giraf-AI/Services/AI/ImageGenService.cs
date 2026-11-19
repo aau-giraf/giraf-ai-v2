@@ -19,8 +19,10 @@ public class ImageGenService
         _imageGenerationClient = httpClientFactory.CreateClient("ImageGeneration");
     }
     
+    // Generates base64-encoded image data from the provider using the given prompt.
     public async Task<string> GenerateImageData(string request)
     {
+        // Create a request object for the image provider with the specified parameters
         var imageGenerateRequest = new ImageProviderRequest
         {
             Prompt = new PromptBuilder(request, false, "Prompts/IMGGEN/IMG_Master.txt").Text,

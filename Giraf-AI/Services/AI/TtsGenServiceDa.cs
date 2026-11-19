@@ -1,4 +1,4 @@
-// Integrates with the Danish speech provider and handles its callback response.
+﻿// Integrates with the Danish speech provider and handles its callback response.
 using Giraf_AI.DTOs.Providers.TtsProviderDa;
 
 namespace Giraf_AI.Services.AI;
@@ -11,6 +11,7 @@ public class TtsGenServiceDa
 {
     private readonly HttpClient _TtsGenerationClient;
 
+    // Initializes a new instance of the TtsGenServiceDa class with an HTTP client factory.
     public TtsGenServiceDa(IHttpClientFactory httpClientFactory)
     {
         _TtsGenerationClient = httpClientFactory.CreateClient("TtsDa");
@@ -18,6 +19,7 @@ public class TtsGenServiceDa
 
     public async Task<byte[]> GenerateTtsAsyncDa(string text)
     {
+        // Create a request object for the Danish TTS provider with the specified parameters
         var TtsGenerateRequestDa = new TtsProviderRequestDa
         {
             Text = text,
@@ -27,6 +29,8 @@ public class TtsGenServiceDa
             TopK = 50,
             MaxTokens = 500,
         };
+        
+        // Send request to the model container endpoint
         using var response = await _TtsGenerationClient.PostAsJsonAsync("v1/audio/speech", TtsGenerateRequestDa);
         response.EnsureSuccessStatusCode();
 

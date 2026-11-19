@@ -8,7 +8,7 @@ namespace Giraf_AI.Services.Queue;
 /// Implements the image-generation queue.
 /// </summary>
 
-public class ImgImageQueueService : IImageQueueService
+public class ImgQueueService : IImageQueueService
 {
     private const int Capacity = 1000;
     private readonly Channel<ImageJob> _queue = Channel.CreateBounded<ImageJob>(

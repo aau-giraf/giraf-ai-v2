@@ -24,7 +24,7 @@ dataSourceBuilder.MapEnum<LangType>("language");
 var dataSource = dataSourceBuilder.Build();
 
 builder.Services.AddControllers();
-builder.Services.AddSingleton<IImageQueueService, ImgImageQueueService>();
+builder.Services.AddSingleton<IImageQueueService, ImgQueueService>();
 builder.Services.AddHostedService<ImgQueueHostedService>();
 builder.Services.AddSingleton<ITtsQueueService, TtsQueueService>();
 builder.Services.AddHostedService<TtsQueueHostedService>();

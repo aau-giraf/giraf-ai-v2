@@ -8,7 +8,6 @@ namespace Giraf_AI.Services.AI;
 /// <summary>
 /// Calls the language-model provider for prompt enrichment.
 /// </summary>
-
 public class LlmService
 {
     private readonly HttpClient _llmClient;
@@ -16,9 +15,11 @@ public class LlmService
     {
         _llmClient = httpClientFactory.CreateClient("Llm");
     }
-
+    
+    // Generates enriched prompt text from the provider using the given request and prompt path.
     public async Task<string> GenerateLlmAsync(string request, string path)
     {
+        // Create a request object for the language model provider with the specified parameters
         var llmGenerateRequest = new LlmProviderRequest
         {
             Prompt = new PromptBuilder(request, true, path).Text,
@@ -31,10 +32,12 @@ public class LlmService
                 NumPredict = 50
             }
         };
-
+        
+        // Send request to the model container endpoint
         using var response = await _llmClient.PostAsJsonAsync("api/generate", llmGenerateRequest);
         response.EnsureSuccessStatusCode();
-
+        
+        // Deserializes the model container's response into LlmProviderResponse DTO
         var result = await response.Content.ReadFromJsonAsync<LlmProviderResponse>()
                      ?? throw new InvalidOperationException("Ollama returned an empty response.");
 

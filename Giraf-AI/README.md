@@ -43,3 +43,34 @@ CREATE TABLE "tts_queue" (
 ); 
 ```
 
+To send post requests to the application you can use Postman or any other tool that can send HTTP requests. The endpoints are as follows:
+
+**Image generation endpoint**
+
+```POST localhost:8100/api/image-generation```
+
+**Text to speech endpoint**
+
+```POST localhost:8100/api/tts```
+
+**image generation request body example**
+
+```json
+{
+    "Prompt": "madpakke med en sandwich",
+    "MapID": 4202,
+    "IdType": "CitizenID",
+    "ImgID": "57201",
+    "OriginApp": "fp"
+}
+```
+
+**text to speech request body example**
+
+```json
+{
+    "text": "En melon der er skåret ud i både",
+    "ttsID": 12,
+    "lang": "da"
+}
+```

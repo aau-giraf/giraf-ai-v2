@@ -4,13 +4,13 @@ namespace Giraf_AI.HelperClasses;
 /// <summary>
 /// Builds prompts for generating image descriptions.
 /// </summary>
-
 public class PromptBuilder
 {
     public PromptBuilder(string str, bool placement, string path)
     {
         try
         {
+            // Read the contents of the specified file and construct the prompt text based on the placement flag
             var fileContents = File.ReadAllText(path);
             Text = placement
                 ? fileContents + ". " + str
