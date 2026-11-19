@@ -27,6 +27,5 @@ public class ImageRequest
     [Required(ErrorMessage = "Origin app is required")]
     [RegularExpression("^(?i)(vta|fp)$", 
         ErrorMessage = "OriginApp must be either 'vta' or 'fp', case-insensitive")]
-    [MaxLength(10, ErrorMessage = "OriginApp cannot exceed 10 characters")]
     public required string OriginApp { get; init; } = string.Empty;
 }

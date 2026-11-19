@@ -19,18 +19,6 @@ public class ImageService
     public async Task<ImageResult> ProcessImageRequestAsync(ImageRequest req)
     {
         var originApp = req.OriginApp.Trim().ToLowerInvariant();
-        var titlePromptDa = originApp switch
-        {
-            "vta" => "Prompts/TITLE/TitleDaVTA.txt",
-            "fp" => "Prompts/TITLE/TitleDaFP.txt",
-            _ => throw new InvalidOperationException("The request contains an unsupported origin app.")
-        };
-        var titlePromptEn = originApp switch
-        {
-            "vta" => "Prompts/TITLE/TitleEnVTA.txt",
-            "fp" => "Prompts/TITLE/TitleEnFP.txt",
-            _ => throw new InvalidOperationException("The request contains an unsupported origin app.")
-        };
 
         // Send the prompt to the LLM translator
         var translation = await _llmService.GenerateLlmAsync(req.Prompt, "Prompts/TRANSLATOR/Master.txt");
@@ -51,11 +39,25 @@ public class ImageService
             throw new ContentFilterViolationException();
         }
         
+        // Determine the correct title master prompt based on the origin app
+        var titleMasterPromptDa = originApp switch
+        {
+            "vta" => "Prompts/TITLE/TitleDaVTA.txt",
+            "fp" => "Prompts/TITLE/TitleDaFP.txt",
+            _ => throw new InvalidOperationException("The request contains an unsupported origin app.")
+        };
+        var titleMasterPromptEn = originApp switch
+        {
+            "vta" => "Prompts/TITLE/TitleEnVTA.txt",
+            "fp" => "Prompts/TITLE/TitleEnFP.txt",
+            _ => throw new InvalidOperationException("The request contains an unsupported origin app.")
+        };
+        
         // Simultaneously start Image Generation, TitleDa and TitleEn and wait for all to finish.
         var results = await Task.WhenAll(
             _imageGenerationService.GenerateImageData(translation),
-            _llmService.GenerateLlmAsync(translation, titlePromptDa),
-            _llmService.GenerateLlmAsync(translation, titlePromptEn));
+            _llmService.GenerateLlmAsync(translation, titleMasterPromptDa), 
+            _llmService.GenerateLlmAsync(translation, titleMasterPromptEn));
         
         // Set the results to the desired variables
         var imgData = results[0];

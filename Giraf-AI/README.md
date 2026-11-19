@@ -1,4 +1,22 @@
-﻿Database setup
+﻿
+
+To run the application you need to set up a PostgreSQL database.
+
+Then you need to run the following command inside the terminal to run the application:
+
+```dotnet run```
+
+To receive the results and save them on your local maching you need to run the mock server in a seperate terminal:
+
+```node MockServer/server.js```
+
+This will save both the requests and the attached files in your /%USER%/documents/generations/ folder
+
+**Database setup**
+
+You need to name the database ```GIRAF_AI_DB``` with the password ```SQLvmDBaccess```
+
+To set up the database, run the following SQL commands:
 
 ```postgresql
 DROP TABLE imggen_queue;
@@ -24,3 +42,4 @@ CREATE TABLE "tts_queue" (
      received    TIMESTAMP NOT NULL
 ); 
 ```
+
