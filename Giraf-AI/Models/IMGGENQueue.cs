@@ -1,4 +1,9 @@
-﻿namespace Giraf_AI.Models;
+// Represents an image-generation item waiting for provider processing.
+namespace Giraf_AI.Models;
+
+/// <summary>
+/// Represents an image-generation queue item.
+/// </summary>
 
 public class ImgGenQueue
 {

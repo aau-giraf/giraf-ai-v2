@@ -1,3 +1,4 @@
+// Exposes text-to-speech requests while keeping provider work asynchronous through the queue.
 using Giraf_AI.Data;
 using Giraf_AI.DTOs;
 using Giraf_AI.Jobs;

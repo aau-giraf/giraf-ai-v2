@@ -1,9 +1,14 @@
-﻿﻿using System.Text;
+using System.Text;
+// Integrates with the image provider and maps its callback data into application models.
 using System.Text.Json;
 using Giraf_AI.DTOs.Providers.ImageProvider;
 using Giraf_AI.HelperClasses;
 
 namespace Giraf_AI.Services.AI;
+
+/// <summary>
+/// Calls the image provider and processes its response.
+/// </summary>
 
 public class ImageGenService
 {

@@ -1,3 +1,4 @@
+// Application startup wires configuration, persistence, HTTP clients, services, and hosted queues.
 using Giraf_AI.Data;
 using Giraf_AI.Configuration;
 using Giraf_AI.Models;
@@ -23,7 +24,7 @@ dataSourceBuilder.MapEnum<LangType>("language");
 var dataSource = dataSourceBuilder.Build();
 
 builder.Services.AddControllers();
-builder.Services.AddSingleton<IQueueService, ImgQueueService>();
+builder.Services.AddSingleton<IImageQueueService, ImgImageQueueService>();
 builder.Services.AddHostedService<ImgQueueHostedService>();
 builder.Services.AddSingleton<ITtsQueueService, TtsQueueService>();
 builder.Services.AddHostedService<TtsQueueHostedService>();

@@ -1,8 +1,13 @@
+// Integrates with the language-model provider used to enrich image prompts.
 using System.Net.Http.Json;
 using Giraf_AI.DTOs.Providers.LlmProvider;
 using Giraf_AI.HelperClasses;
 
 namespace Giraf_AI.Services.AI;
+
+/// <summary>
+/// Calls the language-model provider for prompt enrichment.
+/// </summary>
 
 public class LlmService
 {

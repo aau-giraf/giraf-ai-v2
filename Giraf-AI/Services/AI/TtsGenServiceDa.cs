@@ -1,6 +1,11 @@
-﻿using Giraf_AI.DTOs.Providers.TtsProviderDa;
+// Integrates with the Danish speech provider and handles its callback response.
+using Giraf_AI.DTOs.Providers.TtsProviderDa;
 
 namespace Giraf_AI.Services.AI;
+
+/// <summary>
+/// Calls the Danish text-to-speech provider.
+/// </summary>
 
 public class TtsGenServiceDa
 {

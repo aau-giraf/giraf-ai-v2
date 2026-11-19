@@ -1,3 +1,4 @@
+// Represents the image-generation status and result returned to API consumers.
 using Giraf_AI.Models;
 using System.Text.Json.Serialization;
 

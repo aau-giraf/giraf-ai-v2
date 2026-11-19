@@ -1,6 +1,11 @@
-﻿using System.Text.Json.Serialization;
+// Defines the Danish TTS provider response payload.
+using System.Text.Json.Serialization;
 
 namespace Giraf_AI.DTOs.Providers.TtsProviderDa;
+
+/// <summary>
+/// Contains the Danish speech-provider response.
+/// </summary>
 
 public class TtsProviderResponseDa
 {

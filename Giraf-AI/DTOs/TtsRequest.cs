@@ -1,6 +1,11 @@
+// Carries text, language, and client identifiers for a text-to-speech request.
 using System.ComponentModel.DataAnnotations;
 
 namespace Giraf_AI.DTOs;
+
+/// <summary>
+/// Describes a text-to-speech request received by the API.
+/// </summary>
 
 public class TtsRequest
 {

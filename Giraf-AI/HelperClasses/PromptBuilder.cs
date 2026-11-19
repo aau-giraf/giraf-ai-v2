@@ -1,4 +1,9 @@
+// Builds the structured prompt sent to the language model for image descriptions.
 namespace Giraf_AI.HelperClasses;
+
+/// <summary>
+/// Builds prompts for generating image descriptions.
+/// </summary>
 
 public class PromptBuilder
 {

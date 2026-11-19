@@ -1,6 +1,11 @@
-﻿using Giraf_AI.DTOs.Providers.TtsProviderEn;
+// Integrates with the English speech provider and handles its callback response.
+using Giraf_AI.DTOs.Providers.TtsProviderEn;
 
 namespace Giraf_AI.Services.AI;
+
+/// <summary>
+/// Calls the English text-to-speech provider.
+/// </summary>
 
 
 public class TtsGenServiceEn
