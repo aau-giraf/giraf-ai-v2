@@ -1,5 +1,6 @@
 // Coordinates image requests, persistence, and the asynchronous image queue.
 using Giraf_AI.DTOs;
+using Giraf_AI.Models;
 using Giraf_AI.Services.AI;
 
 namespace Giraf_AI.Services;
@@ -30,7 +31,11 @@ public class ImageService
     public async Task<ImageResult> ProcessImageRequestAsync(ImageRequest req)
     {
         // Normalize the origin app to lowercase for consistent processing
-        var originApp = req.OriginApp.Trim().ToLowerInvariant();
+        var originApp = req.OriginApp
+            ?.Trim()
+            .ToLowerInvariant()
+            ?? throw new InvalidOperationException("The request contains no origin app.");
+        var idType = req.IdType.Trim().ToLowerInvariant();
 
         // Send the prompt to the LLM translator
         var translation = await _llmService.GenerateLlmAsync(req.Prompt, "Prompts/TRANSLATOR/Master.txt");
@@ -83,9 +88,9 @@ public class ImageService
             TitleEn = titleEn,
             ImgID = req.ImgID,
             // Only fill in the correct ID. The ID's with null will not be present in the return body
-            CitizenID = req.IdType == "CitizenID" ? req.MapID : null,
-            ClassID = req.IdType == "ClassID" ? req.MapID : null,
-            OrganizationID = req.IdType == "OrganizationID" ? req.MapID : null,
+            CitizenID = idType == "citizenid" ? req.MapID : null,
+            ClassID = idType == "classid" ? req.MapID : null,
+            OrganizationID = idType == "organizationid" ? req.MapID : null,
             ImageData = imgData
         };
     }

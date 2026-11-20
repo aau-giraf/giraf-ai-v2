@@ -89,12 +89,12 @@ public sealed class ImgQueueHostedService(
         using IServiceScope scope = scopeFactory.CreateScope();
         AppDbContext dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 
-        List<ImgGenQueue> pendingEntries = await dbContext.ImgGenQueues
+        List<ImgQueue> pendingEntries = await dbContext.ImgGenQueues
             .AsNoTracking()
             .OrderBy(entry => entry.QueueId)
             .ToListAsync(cancellationToken);
 
-        foreach (ImgGenQueue entry in pendingEntries)
+        foreach (ImgQueue entry in pendingEntries)
         {
             var job = new ImageJob
             {
@@ -112,7 +112,13 @@ public sealed class ImgQueueHostedService(
                         _ => throw new InvalidOperationException(
                             $"Queue entry {entry.QueueId} has an unsupported ID type.")
                     },
-                    OriginApp = entry.OriginApp.Trim().ToLowerInvariant()
+                    OriginApp = entry.OriginApp switch
+                    {
+                        OriginApp.vta => "vta",
+                        OriginApp.fp => "fp",
+                        _ => throw new InvalidOperationException(
+                            $"Queue entry {entry.QueueId} has an unsupported origin app.")
+                    }
                 }
             };
 

@@ -31,26 +31,31 @@ public class TtsService
     {
         // Determine the language from the request, defaulting to Danish if not specified
         var language = req.Lang?.Trim().ToLowerInvariant() ?? "da";
+        var originApp = req.OriginApp
+            ?? throw new InvalidOperationException("The request contains no origin app.");
         
-        // Danish TTS is handled by the Plapre model and returned as a PCM file, which is then converted to a WAV file before being returned as a base64 string.
+        // Danish TTS is handled by the Plapre model and returned as a PCM file,
+        // which is then converted to a WAV file before being returned as a base64 string.
         if (language == "da") 
         {
             byte[] rawAudio = await _TtsGenServiceDa.GenerateTtsAsyncDa(req.Text);
             return new TtsResult
             {
                 Text = req.Text,
-                TtsID = req.TtsID,
+                TtsId = req.TtsID,
                 Audio = Convert.ToBase64String(CreateWaveFile(rawAudio))
             };
         }
-        // English TTS is handled by the Kokoro model and returned as a WAV file, which is then returned as a base64 string.
+        
+        // English TTS is handled by the Kokoro model and returned as a WAV file,
+        // which is then returned as a base64 string.
         else if (language == "en")
         {
             byte[] rawAudio = await _TtsGenServiceEn.GenerateTtsAsyncEn(req.Text);
             return new TtsResult
             {
                 Text = req.Text,
-                TtsID = req.TtsID,
+                TtsId = req.TtsID,
                 Audio = Convert.ToBase64String(rawAudio)
             };
         }

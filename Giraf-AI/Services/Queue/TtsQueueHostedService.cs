@@ -60,12 +60,18 @@ public sealed class TtsQueueHostedService(
                 // Generate the audio before notifying GIRAF CORE that the job is complete.
                 TtsResult result = await ttsService.ProcessTtsRequestAsync(job.Request);
 
-                // Use the named client so the configured GIRAF CORE base address and
-                // HTTP settings are applied consistently.
-                var girafCoreClient = httpClientFactory.CreateClient("GirafCore");
-                
-                // Keep the database entry until CORE confirms receipt with 202 Accepted.
-                using var response = await girafCoreClient.PostAsJsonAsync(
+                // Create the HTTP client for the appropriate provider based on the origin app.
+                var vtaClient = httpClientFactory.CreateClient("TtsVta");
+                var fpClient = httpClientFactory.CreateClient("TtsFp");
+                var currentClient = job.Request.OriginApp switch
+                {
+                    OriginApp.vta => vtaClient,
+                    OriginApp.fp => fpClient,
+                    _ => throw new InvalidOperationException("The request contains an unsupported origin app.")
+                };
+
+                // Keep the database entry until either VTA or FP confirms receipt with 202 Accepted.
+                using var response = await currentClient.PostAsJsonAsync(
                     configuration["Tts:CoreCallbackPath"] ?? "tts/", result, stoppingToken);
 
                 // Convert HTTP error responses such as 400 or 500 into exceptions
@@ -148,7 +154,8 @@ public sealed class TtsQueueHostedService(
                         // startup makes invalid persisted data visible immediately.
                         _ => throw new InvalidOperationException(
                             $"TTS entry {entry.TtsId} has an unsupported language.")
-                    }
+                    },
+                    OriginApp = entry.OriginApp
                 }
             };
 
