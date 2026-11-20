@@ -10,6 +10,6 @@ namespace Giraf_AI.DTOs;
 public class TtsResult
 {
     public required string Text { get; init; }
-    public required int TtsId { get; init; }
+    public required string TtsId { get; init; }
     public required string Audio { get; init; }
 }

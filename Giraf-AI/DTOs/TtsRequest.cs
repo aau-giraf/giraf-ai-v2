@@ -15,8 +15,8 @@ public class TtsRequest
     public required string Text { get; init; } = string.Empty;
 
     [Required(ErrorMessage = "TtsID is required")]
-    [Range(1, int.MaxValue, ErrorMessage = "TtsID must be a positive integer")]
-    public required int TtsID { get; init; }
+    [StringLength(100, ErrorMessage = "TtsID cannot exceed 100 characters")]
+    public required string TtsID { get; init; } = string.Empty;
     
     [Required(ErrorMessage = "OriginApp is required")]
     public required OriginApp? OriginApp { get; init; }

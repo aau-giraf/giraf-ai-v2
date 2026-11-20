@@ -12,5 +12,5 @@ public class TtsJob
     public Guid Id { get; } = Guid.NewGuid();
     public required TtsRequest Request { get; init; }
     public TaskCompletionSource<TtsResult> Completion { get; } = new(TaskCreationOptions.RunContinuationsAsynchronously);
-    public int TtsId { get; init; }
+    public required string TtsId { get; init; }
 }
