@@ -70,21 +70,13 @@ public sealed class TtsQueueHostedService(
                     _ => throw new InvalidOperationException("The request contains an unsupported origin app.")
                 };
 
-                // Keep the database entry until either VTA or FP confirms receipt with 202 Accepted.
-                using var response = await currentClient.PostAsJsonAsync(
-                    configuration["Tts:CoreCallbackPath"] ?? "tts/", result, stoppingToken);
-
-                // Convert HTTP error responses such as 400 or 500 into exceptions
-                // handled by the job failure path below.
-                response.EnsureSuccessStatusCode();
-
-                // A successful HTTP status alone is not enough: this callback
-                // contract specifically requires 202 Accepted.
-                if (response.StatusCode != HttpStatusCode.Accepted)
-                {
-                    throw new HttpRequestException(
-                        $"GIRAF CORE returned {(int)response.StatusCode}; expected 202 Accepted.");
-                }
+                // Keep retrying until VTA or FP confirms receipt with 202 Accepted.
+                await DeliverResultUntilAcceptedAsync(
+                    currentClient,
+                    configuration["Tts:CoreCallbackPath"] ?? "tts/",
+                    result,
+                    job.Id,
+                    stoppingToken);
                 
                 // Deleting the entry acknowledges completion and prevents replay after restart.
                 int deletedRows = await dbContext.TtsQueues
@@ -114,6 +106,48 @@ public sealed class TtsQueueHostedService(
                 logger.LogError(e, "Failed to process or deliver TTS job {JobId}.", job.Id);
                 job.Completion.TrySetException(e);
             }
+        }
+    }
+
+    private async Task DeliverResultUntilAcceptedAsync(
+        HttpClient client,
+        string callbackPath,
+        TtsResult result,
+        Guid jobId,
+        CancellationToken cancellationToken)
+    {
+        while (true)
+        {
+            try
+            {
+                using HttpResponseMessage response = await client.PostAsJsonAsync(
+                    callbackPath, result, cancellationToken);
+
+                if (response.StatusCode == HttpStatusCode.Accepted)
+                {
+                    return;
+                }
+
+                logger.LogWarning(
+                    "TTS callback for job {JobId} returned status {StatusCode}; retrying.",
+                    jobId,
+                    (int)response.StatusCode);
+            }
+            catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested)
+            {
+                logger.LogWarning(
+                    "TTS callback for job {JobId} timed out; retrying.",
+                    jobId);
+            }
+            catch (HttpRequestException e)
+            {
+                logger.LogWarning(
+                    e,
+                    "TTS callback for job {JobId} failed; retrying.",
+                    jobId);
+            }
+
+            await Task.Delay(TimeSpan.FromSeconds(1), cancellationToken);
         }
     }
 

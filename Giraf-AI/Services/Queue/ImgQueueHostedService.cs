@@ -46,13 +46,11 @@ public sealed class ImgQueueHostedService(
 
                 ImageResult result = await imageService.ProcessImageRequestAsync(job.Request);
                 var girafCoreClient = httpClientFactory.CreateClient("GirafCore");
-                using var response = await girafCoreClient.PostAsJsonAsync("images/", result, stoppingToken);
-                response.EnsureSuccessStatusCode();
-                if (response.StatusCode != HttpStatusCode.Accepted)
-                {
-                    throw new HttpRequestException(
-                        $"GIRAF CORE returned {(int)response.StatusCode}; expected 202 Accepted.");
-                }
+                await DeliverResultUntilAcceptedAsync(
+                    girafCoreClient,
+                    result,
+                    job.Id,
+                    stoppingToken);
 
                 int deletedRows = await dbContext.ImgGenQueues
                     .Where(entry => entry.QueueId == job.QueueId)
@@ -81,6 +79,47 @@ public sealed class ImgQueueHostedService(
                 logger.LogError(e, "Failed to process or deliver image job {JobId}.", job.Id);
                 job.Completion.TrySetException(e);
             }
+        }
+    }
+
+    private async Task DeliverResultUntilAcceptedAsync(
+        HttpClient client,
+        ImageResult result,
+        Guid jobId,
+        CancellationToken cancellationToken)
+    {
+        while (true)
+        {
+            try
+            {
+                using HttpResponseMessage response = await client.PostAsJsonAsync(
+                    "images/", result, cancellationToken);
+
+                if (response.StatusCode == HttpStatusCode.Accepted)
+                {
+                    return;
+                }
+
+                logger.LogWarning(
+                    "Image callback for job {JobId} returned status {StatusCode}; retrying.",
+                    jobId,
+                    (int)response.StatusCode);
+            }
+            catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested)
+            {
+                logger.LogWarning(
+                    "Image callback for job {JobId} timed out; retrying.",
+                    jobId);
+            }
+            catch (HttpRequestException e)
+            {
+                logger.LogWarning(
+                    e,
+                    "Image callback for job {JobId} failed; retrying.",
+                    jobId);
+            }
+
+            await Task.Delay(TimeSpan.FromSeconds(1), cancellationToken);
         }
     }
 
