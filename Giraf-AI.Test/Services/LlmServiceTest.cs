@@ -45,9 +45,9 @@ public class LlmServiceTest
         var path = TempFileHelper.CreateTempFile("Master prompt");
 
         try
-        {
-        // Arrange
-        var httpResponse = new HttpResponseMessage(HttpStatusCode.OK)
+        { 
+            // Arrange 
+            var httpResponse = new HttpResponseMessage(HttpStatusCode.OK)
         {
             Content = new StringContent("null")
         };
@@ -69,18 +69,22 @@ public class LlmServiceTest
     [Fact]
     public async Task GenerateLlmAsync_EmptyResponseBody()
     {
+        // Arrange 
         var path = TempFileHelper.CreateTempFile("Master prompt");
 
         try
-        {
-        var httpResponse = new HttpResponseMessage(HttpStatusCode.OK)
+        { 
+            var httpResponse = new HttpResponseMessage(HttpStatusCode.OK)
         {
             Content = new StringContent(string.Empty)
         };
         
         var service = ServiceFactory.CreateLlmService(httpResponse);
         
+        // Act
         var exception = await Record.ExceptionAsync(async () => await service.GenerateLlmAsync("A cat", path));
+        
+        // Assert
         Assert.IsType<JsonException>(exception);
         }
         finally
