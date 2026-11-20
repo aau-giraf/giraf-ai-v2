@@ -14,7 +14,7 @@ namespace Giraf_AI.Services.Queue;
 /// </summary>
 
 public sealed class ImgQueueHostedService(
-    IImageQueueService imageQueueService,
+    IQueueService<ImageJob> imgQueueService,
     IServiceScopeFactory scopeFactory,
     IHttpClientFactory httpClientFactory,
     ILogger<ImgQueueHostedService> logger) : BackgroundService
@@ -29,7 +29,7 @@ public sealed class ImgQueueHostedService(
 
             try
             {
-                job = await imageQueueService.RemoveFromQueue(stoppingToken);
+                job = await imgQueueService.RemoveFromQueue(stoppingToken);
             }
             catch (OperationCanceledException) when (stoppingToken.IsCancellationRequested)
             {
@@ -116,7 +116,7 @@ public sealed class ImgQueueHostedService(
                 }
             };
 
-            await imageQueueService.AddToQueue(job, cancellationToken);
+            await imgQueueService.AddToQueue(job, cancellationToken);
             logger.LogInformation(
                 "Restored pending image job for queue entry {QueueId}.",
                 entry.QueueId);

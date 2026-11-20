@@ -12,7 +12,7 @@ namespace Giraf_AI.Services.Queue;
 /// <summary>
 /// Implements the text-to-speech queue.
 /// </summary>
-public class TtsQueueService : ITtsQueueService
+public class TtsQueueService : IQueueService<TtsJob>
 {
     // Define a constant for the maximum capacity of the queue and create a bounded channel for TTS jobs
     private const int Capacity = 1000;

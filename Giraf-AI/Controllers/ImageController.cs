@@ -15,7 +15,7 @@ namespace Giraf_AI.Controllers;
 [ApiController]
 [Route("api/image-generation")]
 public class ImageGenerationController(
-    IImageQueueService imageQueueService,
+    IQueueService<ImageJob> imgQueueService,
     AppDbContext dbContext) : ControllerBase
 {
     [HttpPost]
@@ -62,7 +62,7 @@ public class ImageGenerationController(
                 Request = normalizedRequest,
                 QueueId = queueEntry.QueueId
             };
-            await imageQueueService.AddToQueue(job, cancellationToken);
+            await imgQueueService.AddToQueue(job, cancellationToken);
             await job.Completion.Task.WaitAsync(cancellationToken);
             return Accepted();
         }

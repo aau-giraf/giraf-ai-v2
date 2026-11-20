@@ -14,7 +14,7 @@ namespace Giraf_AI.Controllers;
 [ApiController]
 [Route("api/tts")]
 public class TtsController(
-    ITtsQueueService queueService,
+    IQueueService<TtsJob> queueService,
     AppDbContext dbContext) : ControllerBase
 {
     [HttpPost]

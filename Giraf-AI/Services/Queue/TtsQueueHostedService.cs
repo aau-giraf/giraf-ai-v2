@@ -15,7 +15,7 @@ namespace Giraf_AI.Services.Queue;
 /// Jobs remain persisted until the callback has been acknowledged successfully.
 /// </summary>
 public sealed class TtsQueueHostedService(
-    ITtsQueueService queueService,
+    IQueueService<TtsJob> queueService,
     IServiceScopeFactory scopeFactory,
     IHttpClientFactory httpClientFactory,
     IConfiguration configuration,
