@@ -37,7 +37,7 @@ CREATE TABLE "imggen_queue" (
 
 CREATE TABLE "tts_queue" (
      prompt      VARCHAR(500) NOT NULL,
-     tts_id      INTEGER NOT NULL,
+     tts_id      VARCHAR(100) NOT NULL,
      language    language NOT NULL,
      origin_app  VARCHAR(10) NOT NULL,
      received    TIMESTAMP NOT NULL
