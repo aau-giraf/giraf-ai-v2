@@ -1,9 +1,14 @@
-﻿﻿using System.Text;
+using System.Text;
+// Integrates with the image provider and maps its callback data into application models.
 using System.Text.Json;
 using Giraf_AI.DTOs.Providers.ImageProvider;
 using Giraf_AI.HelperClasses;
 
 namespace Giraf_AI.Services.AI;
+
+/// <summary>
+/// Calls the image provider and processes its response.
+/// </summary>
 
 public class ImageGenService : IImageGenService
 {
@@ -14,8 +19,10 @@ public class ImageGenService : IImageGenService
         _imageGenerationClient = httpClientFactory.CreateClient("ImageGeneration");
     }
     
+    // Generates base64-encoded image data from the provider using the given prompt.
     public async Task<string> GenerateImageData(string request)
     {
+        // Create a request object for the image provider with the specified parameters
         var imageGenerateRequest = new ImageProviderRequest
         {
             Prompt = new PromptBuilder(request, false, "Prompts/IMGGEN/IMG_Master.txt").Text,

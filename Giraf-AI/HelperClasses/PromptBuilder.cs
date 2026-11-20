@@ -1,7 +1,11 @@
 using Giraf_AI.Exceptions;
 
+// Builds the structured prompt sent to the language model for image descriptions.
 namespace Giraf_AI.HelperClasses;
 
+/// <summary>
+/// Builds prompts for generating image descriptions.
+/// </summary>
 public class PromptBuilder
 {
     /// If placement is true, the master prompt comes before the prompt/str
@@ -10,6 +14,7 @@ public class PromptBuilder
     {
         try
         {
+            // Read the contents of the specified file and construct the prompt text based on the placement flag
             var fileContents = File.ReadAllText(path);
             if (string.IsNullOrWhiteSpace(fileContents))
             {

@@ -1,3 +1,4 @@
+// Centralizes named HTTP client defaults so provider calls share consistent timeout and resilience settings.
 namespace Giraf_AI.Configuration;
 
 /// <summary>

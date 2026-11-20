@@ -1,3 +1,4 @@
+// Holds optional synthesis settings that can be forwarded to the selected voice provider.
 using System.ComponentModel.DataAnnotations;
 
 namespace Giraf_AI.DTOs;

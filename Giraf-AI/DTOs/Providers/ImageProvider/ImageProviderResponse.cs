@@ -1,3 +1,4 @@
+// Defines the provider response envelope used while tracking image generation.
 using System.Text.Json.Serialization;
 
 namespace Giraf_AI.DTOs.Providers.ImageProvider;

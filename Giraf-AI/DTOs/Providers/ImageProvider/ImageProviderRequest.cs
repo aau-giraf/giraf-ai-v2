@@ -1,3 +1,4 @@
+// Defines the provider request body used to submit an image-generation job.
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 

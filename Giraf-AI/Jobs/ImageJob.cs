@@ -1,6 +1,11 @@
+// Contains the queued image-generation input and completion metadata.
 using Giraf_AI.DTOs;
 
 namespace Giraf_AI.Jobs;
+
+/// <summary>
+/// Represents work queued for image generation.
+/// </summary>
 
 public class ImageJob
 {

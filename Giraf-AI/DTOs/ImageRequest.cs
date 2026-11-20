@@ -1,3 +1,4 @@
+// Carries the prompt and client identifiers needed to start an image-generation request.
 using System.ComponentModel.DataAnnotations;
 
 namespace Giraf_AI.DTOs;

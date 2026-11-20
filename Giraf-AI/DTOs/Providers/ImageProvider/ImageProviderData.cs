@@ -1,3 +1,4 @@
+// Models the image payload returned by the image provider callback.
 using System.Text.Json.Serialization;
 
 namespace Giraf_AI.DTOs.Providers.ImageProvider;

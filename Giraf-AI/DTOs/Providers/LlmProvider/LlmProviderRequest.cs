@@ -1,6 +1,11 @@
+// Models the language-model request and its generation options.
 using System.Text.Json.Serialization;
 
 namespace Giraf_AI.DTOs.Providers.LlmProvider;
+
+/// <summary>
+/// Contains the request sent to the language-model provider.
+/// </summary>
 
 public class LlmProviderRequest
 {
@@ -19,6 +24,10 @@ public class LlmProviderRequest
     [JsonPropertyName("options")] 
     public LlmProviderOptions Options { get; init; } = new();
 }
+
+/// <summary>
+/// Contains generation options for the language-model provider.
+/// </summary>
 
 public class LlmProviderOptions
 {

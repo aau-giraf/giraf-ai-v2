@@ -1,31 +1,44 @@
+// Coordinates image requests, persistence, and the asynchronous image queue.
 using Giraf_AI.DTOs;
 using Giraf_AI.Services.AI;
 
 namespace Giraf_AI.Services;
 
+// <summary>
+// Service responsible for processing image generation requests, including translation, content filtering, and image generation.
+// </summary>
+
+/// <summary>
+/// Coordinates image generation and its persisted result.
+/// </summary>
 public class ImageService : IImageService
 {
+    // Private readonly fields for the LLM service and the image generation service
     private readonly ILlmService _llmService;
     private readonly IImageGenService _imageGenerationService;
 
     public ImageService(
+        // Inject the LLM service and the image generation service into the constructor
         ILlmService llmService,
         IImageGenService imageGenerationService)
     {
+        // Assign the injected services to the private fields
         _llmService = llmService;
         _imageGenerationService = imageGenerationService;
     }
 
     public async Task<ImageResult> ProcessImageRequestAsync(ImageRequest req)
     {
+        // Normalize the origin app to lowercase for consistent processing
         var originApp = req.OriginApp.Trim().ToLowerInvariant();
 
         // Send the prompt to the LLM translator
         var translation = await _llmService.GenerateLlmAsync(req.Prompt, "Prompts/TRANSLATOR/Master.txt");
+        Console.WriteLine(translation);
 
-        
         // Send the translation to the LLM NSFW content filter
         string contentFilter = await _llmService.GenerateLlmAsync(translation, "Prompts/NSFW/Master.txt");
+        Console.WriteLine(contentFilter);
         
         // Sets the isNsfw flag if the output contains inappropriate
         var isNsfw = contentFilter.Contains( 
@@ -55,7 +68,7 @@ public class ImageService : IImageService
         // Simultaneously start Image Generation, TitleDa and TitleEn and wait for all to finish.
         var results = await Task.WhenAll(
             _imageGenerationService.GenerateImageData(translation),
-            _llmService.GenerateLlmAsync(translation, titleMasterPromptDa), 
+            _llmService.GenerateLlmAsync(req.Prompt, titleMasterPromptDa), 
             _llmService.GenerateLlmAsync(translation, titleMasterPromptEn));
         
         // Set the results to the desired variables

@@ -1,7 +1,12 @@
-﻿using Giraf_AI.Models;
+// Defines the EF Core model used to persist generated image and audio metadata.
+using Giraf_AI.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace Giraf_AI.Data;
+
+/// <summary>
+/// Provides the EF Core database context for generated media metadata.
+/// </summary>
 
 public class AppDbContext : DbContext
 {

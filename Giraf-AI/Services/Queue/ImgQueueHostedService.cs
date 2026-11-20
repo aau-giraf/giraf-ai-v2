@@ -1,3 +1,4 @@
+// Drains image jobs in the background and invokes the image provider safely.
 using System.Net;
 using System.Net.Http.Json;
 using Giraf_AI.Data;
@@ -8,8 +9,12 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Giraf_AI.Services.Queue;
 
+/// <summary>
+/// Processes image-generation jobs in the background.
+/// </summary>
+
 public sealed class ImgQueueHostedService(
-    IQueueService queueService,
+    IQueueService<ImageJob> imgQueueService,
     IServiceScopeFactory scopeFactory,
     IHttpClientFactory httpClientFactory,
     ILogger<ImgQueueHostedService> logger) : BackgroundService
@@ -24,7 +29,7 @@ public sealed class ImgQueueHostedService(
 
             try
             {
-                job = await queueService.RemoveFromQueue(stoppingToken);
+                job = await imgQueueService.RemoveFromQueue(stoppingToken);
             }
             catch (OperationCanceledException) when (stoppingToken.IsCancellationRequested)
             {
@@ -111,7 +116,7 @@ public sealed class ImgQueueHostedService(
                 }
             };
 
-            await queueService.AddToQueue(job, cancellationToken);
+            await imgQueueService.AddToQueue(job, cancellationToken);
             logger.LogInformation(
                 "Restored pending image job for queue entry {QueueId}.",
                 entry.QueueId);

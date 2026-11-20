@@ -1,4 +1,9 @@
-﻿namespace Giraf_AI.Models;
+// Enumerates the identifier sources accepted by the API.
+namespace Giraf_AI.Models;
+
+/// <summary>
+/// Identifies the source of a request identifier.
+/// </summary>
 
 public enum IdType
 {

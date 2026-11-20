@@ -1,3 +1,4 @@
+// Exposes the image-generation endpoint and translates queued work into the API response contract.
 using Giraf_AI.Data;
 using Giraf_AI.DTOs;
 using Giraf_AI.Jobs;
@@ -14,7 +15,7 @@ namespace Giraf_AI.Controllers;
 [ApiController]
 [Route("api/image-generation")]
 public class ImageGenerationController(
-    IQueueService queueService,
+    IQueueService<ImageJob> imgQueueService,
     AppDbContext dbContext) : ControllerBase
 {
     [HttpPost]
@@ -61,7 +62,7 @@ public class ImageGenerationController(
                 Request = normalizedRequest,
                 QueueId = queueEntry.QueueId
             };
-            await queueService.AddToQueue(job, cancellationToken);
+            await imgQueueService.AddToQueue(job, cancellationToken);
             await job.Completion.Task.WaitAsync(cancellationToken);
             return Accepted();
         }
