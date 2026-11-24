@@ -1,7 +1,12 @@
-﻿using System.ComponentModel.DataAnnotations;
+// Defines the Danish TTS provider request payload.
+using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
 namespace Giraf_AI.DTOs.Providers.TtsProviderDa;
+
+/// <summary>
+/// Contains the Danish speech-provider request.
+/// </summary>
 
 public class TtsProviderRequestDa // Plapre request class for TTS provider in Danish
 {

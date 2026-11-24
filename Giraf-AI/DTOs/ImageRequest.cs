@@ -1,4 +1,6 @@
+// Carries the prompt and client identifiers needed to start an image-generation request.
 using System.ComponentModel.DataAnnotations;
+using Giraf_AI.Models;
 
 namespace Giraf_AI.DTOs;
 
@@ -8,7 +10,7 @@ namespace Giraf_AI.DTOs;
 public class ImageRequest
 {
     [Required(ErrorMessage = "Prompt is required")]
-    [MaxLength(100, ErrorMessage = "Prompt cannot exceed 100 characters")]
+    [MaxLength(500, ErrorMessage = "Prompt cannot exceed 500 characters")]
     public required string Prompt { get; init; } = string.Empty;
 
     [Required(ErrorMessage = "ImgID is required")]
@@ -16,10 +18,16 @@ public class ImageRequest
     public required string ImgID { get; init; } = string.Empty;
 
     [Required(ErrorMessage = "MapID is required")]
+    [Range(1, int.MaxValue, ErrorMessage = "MapID must be a positive integer")]
     public required int MapID { get; init; }
 
     [Required(ErrorMessage = "ID type is required")]
-    [AllowedValues("CitizenID", "ClassID", "OrganizationID",
-        ErrorMessage = "IdType must be one of: CitizenID, ClassID, OrganizationID")]
+    [RegularExpression("^(?i)(citizenid|classid|organizationid)$", 
+        ErrorMessage = "IdType must be either 'citizenid', 'classid', or 'organizationid', case-insensitive")]
     public required string IdType { get; init; } = string.Empty;
+    
+    [Required(ErrorMessage = "OriginApp is required")]
+    [RegularExpression("^(?i)(vta|fp)$", 
+        ErrorMessage = "OriginApp must be either 'vta' or 'fp', case-insensitive")]
+    public required string OriginApp { get; init; } = string.Empty;
 }

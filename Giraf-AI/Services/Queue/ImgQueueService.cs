@@ -1,9 +1,14 @@
+// Provides the bounded image queue used to decouple API requests from provider calls.
 using System.Threading.Channels;
 using Giraf_AI.Jobs;
 
 namespace Giraf_AI.Services.Queue;
 
-public class ImgQueueService : IQueueService
+/// <summary>
+/// Implements the image-generation queue.
+/// </summary>
+
+public class ImgQueueService : IQueueService<ImageJob>
 {
     private const int Capacity = 1000;
     private readonly Channel<ImageJob> _queue = Channel.CreateBounded<ImageJob>(

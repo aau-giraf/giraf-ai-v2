@@ -1,7 +1,12 @@
-﻿using System.ComponentModel.DataAnnotations;
+// Defines the English TTS provider request payload.
+using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
 namespace Giraf_AI.DTOs.Providers.TtsProviderEn;
+
+/// <summary>
+/// Contains the English speech-provider request.
+/// </summary>
 
 public class TtsProviderRequestEn // Kokoro request class for TTS provider in English
 {
