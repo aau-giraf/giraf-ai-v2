@@ -31,9 +31,7 @@ public class ImageService
     public async Task<ImageResult> ProcessImageRequestAsync(ImageRequest req)
     {
         // Normalize the origin app to lowercase for consistent processing
-        var originApp = req.OriginApp
-            ?.Trim()
-            .ToLowerInvariant()
+        var originApp = req.OriginApp.Trim().ToLowerInvariant()
             ?? throw new InvalidOperationException("The request contains no origin app.");
         var idType = req.IdType.Trim().ToLowerInvariant();
 

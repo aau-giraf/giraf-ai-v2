@@ -57,6 +57,8 @@ public class TtsController(
             await queueService.AddToQueue(job, cancellationToken);
             return Accepted();
         }
+        
+        // Handle cancellation requests gracefully by returning an empty result
         catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
         {
             return new EmptyResult();
