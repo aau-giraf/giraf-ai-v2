@@ -39,8 +39,8 @@ public sealed class ImgQueueHostedService(
             try
             {
                 using IServiceScope scope = scopeFactory.CreateScope();
-                ImageService imageService = scope.ServiceProvider
-                    .GetRequiredService<ImageService>();
+                IImageService imageService = scope.ServiceProvider
+                    .GetRequiredService<IImageService>();
                 AppDbContext dbContext = scope.ServiceProvider
                     .GetRequiredService<AppDbContext>();
 

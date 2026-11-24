@@ -35,9 +35,9 @@ builder.Services.AddDbContext<AppDbContext>(options =>
         npgsqlOptions.MapEnum<IdType>("id_type");
         npgsqlOptions.MapEnum<LangType>("language");
     }));
-builder.Services.AddScoped<ImageService>();
-builder.Services.AddScoped<LlmService>();
-builder.Services.AddScoped<ImageGenService>();
+builder.Services.AddScoped<IImageService, ImageService>();
+builder.Services.AddScoped<ILlmService, LlmService>();
+builder.Services.AddScoped<IImageGenService, ImageGenService>();
 builder.Services.AddScoped<TtsGenServiceDa>();
 builder.Services.AddScoped<TtsGenServiceEn>();
 builder.Services.AddScoped<TtsService>();
