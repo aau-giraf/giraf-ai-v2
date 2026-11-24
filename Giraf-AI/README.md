@@ -73,8 +73,8 @@ Send JSON `POST` requests to:
 | `Prompt` | String | Yes | Up to 500 characters |
 | `MapID` | Integer | Yes | Positive integer |
 | `IdType` | String | Yes | `CitizenID`, `ClassID`, or `OrganizationID` (case-insensitive) |
-| `ImgID` | String | Yes | Up to 100 characters |
-| `OriginApp` | String | Yes | `fp` or `vta` (case-insensitive) |
+| `ImgID` | String | Yes | GUID |
+| `OriginApp` | String | Yes | `fp` (Foodplanner) or `vta` (case-insensitive) |
 
 ### Text-to-speech request
 
