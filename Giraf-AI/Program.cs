@@ -21,6 +21,7 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 
 var dataSourceBuilder = new NpgsqlDataSourceBuilder(connectionString);
 dataSourceBuilder.MapEnum<IdType>("id_type");
+dataSourceBuilder.MapEnum<OriginApp>("origin_app");
 dataSourceBuilder.MapEnum<LangType>("language");
 var dataSource = dataSourceBuilder.Build();
 
@@ -33,6 +34,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(dataSource, npgsqlOptions =>
     {
         npgsqlOptions.MapEnum<IdType>("id_type");
+        npgsqlOptions.MapEnum<OriginApp>("origin_app");
         npgsqlOptions.MapEnum<LangType>("language");
     }));
 builder.Services.AddScoped<ImageService>();

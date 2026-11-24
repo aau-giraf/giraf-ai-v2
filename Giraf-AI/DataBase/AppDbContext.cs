@@ -21,6 +21,8 @@ public class AppDbContext : DbContext
     {
         // Map the PostgreSQL enum
         modelBuilder.HasPostgresEnum<IdType>("id_type");
+        modelBuilder.HasPostgresEnum<OriginApp>("origin_app");
+        modelBuilder.HasPostgresEnum<LangType>("language");
         modelBuilder.Entity<ImgQueue>(entity =>
         {
             entity.ToTable("imggen_queue");
