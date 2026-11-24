@@ -19,8 +19,9 @@ public class AppDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.HasPostgresEnum<IdType>("id_type");
-        modelBuilder.HasPostgresEnum<LangType>("language");
+        modelBuilder.HasPostgresEnum<IdType>("public", "id_type");
+        modelBuilder.HasPostgresEnum<LangType>("public", "language");
+        modelBuilder.HasPostgresEnum<OriginApp>("public", "origin_app");
 
         modelBuilder.Entity<ImgQueue>(entity =>
         {
@@ -32,8 +33,7 @@ public class AppDbContext : DbContext
             entity.Property(e => e.IdType).HasColumnName("id_type").HasColumnType("id_type").IsRequired();
             entity.Property(e => e.OriginApp)
                 .HasColumnName("origin_app")
-                .HasMaxLength(10)
-                .HasConversion<string>()
+                .HasColumnType("origin_app")
                 .IsRequired();
             entity.Property(e => e.Received).HasColumnName("received").IsRequired();
         });
@@ -47,8 +47,7 @@ public class AppDbContext : DbContext
             entity.Property(e => e.Lang).HasColumnName("language").HasColumnType("language").IsRequired();
             entity.Property(e => e.OriginApp)
                 .HasColumnName("origin_app")
-                .HasMaxLength(10)
-                .HasConversion<string>()
+                .HasColumnType("origin_app")
                 .IsRequired();
             entity.Property(e => e.Received).HasColumnName("received").IsRequired();
         });
