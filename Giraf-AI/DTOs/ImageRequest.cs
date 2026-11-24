@@ -10,7 +10,7 @@ namespace Giraf_AI.DTOs;
 public class ImageRequest
 {
     [Required(ErrorMessage = "Prompt is required")]
-    [MaxLength(100, ErrorMessage = "Prompt cannot exceed 100 characters")]
+    [MaxLength(500, ErrorMessage = "Prompt cannot exceed 500 characters")]
     public required string Prompt { get; init; } = string.Empty;
 
     [Required(ErrorMessage = "ImgID is required")]
