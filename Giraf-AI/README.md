@@ -37,8 +37,9 @@ CREATE TABLE "imggen_queue" (
 
 CREATE TABLE "tts_queue" (
      prompt      VARCHAR(500) NOT NULL,
-     tts_id      INTEGER NOT NULL,
+     tts_id      VARCHAR(100) NOT NULL,
      language    language NOT NULL,
+     origin_app  VARCHAR(10) NOT NULL,
      received    TIMESTAMP NOT NULL
 ); 
 ```
@@ -71,6 +72,7 @@ To send post requests to the application you can use Postman or any other tool t
 {
     "text": "En melon der er skåret ud i både",
     "ttsID": 12,
-    "lang": "da"
+    "lang": "da",
+    "originApp": "fp"
 }
 ```

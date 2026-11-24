@@ -18,45 +18,52 @@ public class ImageGenerationController(
     IQueueService<ImageJob> imgQueueService,
     AppDbContext dbContext) : ControllerBase
 {
+    // POST endpoint for generating images based on the provided request.
     [HttpPost]
     public async Task<IActionResult> GenerateImage([FromBody] ImageRequest request, CancellationToken cancellationToken)
     {
         try
         {
-            var originApp = request.OriginApp.Trim().ToLowerInvariant();
+            // Normalize the origin app to lowercase for consistent processing
+            var originApp = request.OriginApp
+                ?? throw new ArgumentException("OriginApp is required.");
+            var idType = request.IdType.Trim().ToLowerInvariant();
             var normalizedRequest = new ImageRequest
             {
                 Prompt = request.Prompt,
                 ImgID = request.ImgID,
                 MapID = request.MapID,
-                IdType = request.IdType,
+                IdType = idType,
                 OriginApp = originApp
             };
 
-            var queueEntry = new ImgGenQueue
+            // Create a new ImgGenQueue entry to store the request in the database
+            var queueEntry = new ImgQueue
             {
-                Prompt = request.Prompt,
-                ImageId = request.ImgID,
-                MapId = request.MapID,
-                IdType = request.IdType.Trim().ToLowerInvariant() switch
+                Prompt = normalizedRequest.Prompt,
+                ImageId = normalizedRequest.ImgID,
+                MapId = normalizedRequest.MapID,
+                IdType = normalizedRequest.IdType switch
                 {
                     "citizenid" => IdType.citizen_id,
                     "classid" => IdType.class_id,
                     "organizationid" => IdType.organization_id,
                     _ => throw new InvalidOperationException("The request contains an unsupported ID type.")
                 },
-                OriginApp = originApp switch
+                OriginApp = normalizedRequest.OriginApp switch
                 {
-                    "vta" => "vta",
-                    "fp" => "fp",
+                    "vta" => OriginApp.vta,
+                    "fp" => OriginApp.fp,
                     _ => throw new InvalidOperationException("The request contains an unsupported origin app.")
                 },
                 Received = DateTime.UtcNow
             };
-
+            
+            // Add the queue entry to the database and save changes
             dbContext.ImgGenQueues.Add(queueEntry);
             await dbContext.SaveChangesAsync(cancellationToken);
 
+            // Create a new ImageJob to represent the queued work and add it to the image queue
             var job = new ImageJob
             {
                 Request = normalizedRequest,
@@ -66,10 +73,14 @@ public class ImageGenerationController(
             await job.Completion.Task.WaitAsync(cancellationToken);
             return Accepted();
         }
+        
+        // Handle cancellation requests gracefully by returning an empty result
         catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
         {
             return new EmptyResult();
         }
+        
+        // Handle content filter violations by returning a 403 Forbidden status code with an appropriate message
         catch (ContentFilterViolationException)
         {
             return StatusCode(StatusCodes.Status403Forbidden, "The prompt contains inappropriate content.");

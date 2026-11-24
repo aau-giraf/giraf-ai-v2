@@ -22,6 +22,16 @@ public class TtsController(
     {
         try
         {
+            var originApp = request.OriginApp
+                ?? throw new ArgumentException("OriginApp is required.");
+            var normalizedRequest = new TtsRequest
+            {
+                Text = request.Text,
+                TtsID = request.TtsID,
+                Lang = request.Lang,
+                OriginApp = originApp
+            };
+
             var queueEntry = new TtsQueue
             {
                 Prompt = request.Text,
@@ -32,6 +42,7 @@ public class TtsController(
                     "en" => LangType.en,
                     _ => throw new InvalidOperationException("The request contains an unsupported language.")
                 },
+                OriginApp = originApp,
                 Received = DateTime.UtcNow
             };
 
@@ -40,7 +51,7 @@ public class TtsController(
 
             var job = new TtsJob
             {
-                Request = request,
+                Request = normalizedRequest,
                 TtsId = queueEntry.TtsId
             };
             await queueService.AddToQueue(job, cancellationToken);

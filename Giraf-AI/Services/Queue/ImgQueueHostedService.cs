@@ -46,13 +46,11 @@ public sealed class ImgQueueHostedService(
 
                 ImageResult result = await imageService.ProcessImageRequestAsync(job.Request);
                 var girafCoreClient = httpClientFactory.CreateClient("GirafCore");
-                using var response = await girafCoreClient.PostAsJsonAsync("images/", result, stoppingToken);
-                response.EnsureSuccessStatusCode();
-                if (response.StatusCode != HttpStatusCode.Accepted)
-                {
-                    throw new HttpRequestException(
-                        $"GIRAF CORE returned {(int)response.StatusCode}; expected 202 Accepted.");
-                }
+                await DeliverResultUntilAcceptedAsync(
+                    girafCoreClient,
+                    result,
+                    job.Id,
+                    stoppingToken);
 
                 int deletedRows = await dbContext.ImgGenQueues
                     .Where(entry => entry.QueueId == job.QueueId)
@@ -84,17 +82,58 @@ public sealed class ImgQueueHostedService(
         }
     }
 
+    private async Task DeliverResultUntilAcceptedAsync(
+        HttpClient client,
+        ImageResult result,
+        Guid jobId,
+        CancellationToken cancellationToken)
+    {
+        while (true)
+        {
+            try
+            {
+                using HttpResponseMessage response = await client.PostAsJsonAsync(
+                    "images/", result, cancellationToken);
+
+                if (response.StatusCode == HttpStatusCode.Accepted)
+                {
+                    return;
+                }
+
+                logger.LogWarning(
+                    "Image callback for job {JobId} returned status {StatusCode}; retrying.",
+                    jobId,
+                    (int)response.StatusCode);
+            }
+            catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested)
+            {
+                logger.LogWarning(
+                    "Image callback for job {JobId} timed out; retrying.",
+                    jobId);
+            }
+            catch (HttpRequestException e)
+            {
+                logger.LogWarning(
+                    e,
+                    "Image callback for job {JobId} failed; retrying.",
+                    jobId);
+            }
+
+            await Task.Delay(TimeSpan.FromSeconds(1), cancellationToken);
+        }
+    }
+
     private async Task RestorePendingJobsAsync(CancellationToken cancellationToken)
     {
         using IServiceScope scope = scopeFactory.CreateScope();
         AppDbContext dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 
-        List<ImgGenQueue> pendingEntries = await dbContext.ImgGenQueues
+        List<ImgQueue> pendingEntries = await dbContext.ImgGenQueues
             .AsNoTracking()
             .OrderBy(entry => entry.QueueId)
             .ToListAsync(cancellationToken);
 
-        foreach (ImgGenQueue entry in pendingEntries)
+        foreach (ImgQueue entry in pendingEntries)
         {
             var job = new ImageJob
             {
@@ -112,7 +151,13 @@ public sealed class ImgQueueHostedService(
                         _ => throw new InvalidOperationException(
                             $"Queue entry {entry.QueueId} has an unsupported ID type.")
                     },
-                    OriginApp = entry.OriginApp.Trim().ToLowerInvariant()
+                    OriginApp = entry.OriginApp switch
+                    {
+                        OriginApp.vta => "vta",
+                        OriginApp.fp => "fp",
+                        _ => throw new InvalidOperationException(
+                            $"Queue entry {entry.QueueId} has an unsupported origin app.")
+                    }
                 }
             };
 

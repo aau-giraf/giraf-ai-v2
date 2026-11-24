@@ -1,5 +1,6 @@
 // Carries the prompt and client identifiers needed to start an image-generation request.
 using System.ComponentModel.DataAnnotations;
+using Giraf_AI.Models;
 
 namespace Giraf_AI.DTOs;
 
@@ -25,7 +26,7 @@ public class ImageRequest
         ErrorMessage = "IdType must be either 'citizenid', 'classid', or 'organizationid', case-insensitive")]
     public required string IdType { get; init; } = string.Empty;
     
-    [Required(ErrorMessage = "Origin app is required")]
+    [Required(ErrorMessage = "OriginApp is required")]
     [RegularExpression("^(?i)(vta|fp)$", 
         ErrorMessage = "OriginApp must be either 'vta' or 'fp', case-insensitive")]
     public required string OriginApp { get; init; } = string.Empty;
