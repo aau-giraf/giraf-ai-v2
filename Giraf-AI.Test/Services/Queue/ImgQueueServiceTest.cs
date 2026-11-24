@@ -23,7 +23,7 @@ public class ImgQueueServiceTest
     }
     
     [Fact]
-    public async Task QueueService_EnqueuesAndDequeuesSameObject()
+    public async Task QueueService_AddToQueueAndRemoveFromQueue_ReturnsSameObject()
     {
         var service = new ImgQueueService();
         var imageJob = CreateImageJob();
@@ -40,7 +40,7 @@ public class ImgQueueServiceTest
         
     }*/
     [Fact]
-    public async Task QueueService_DequeueAsync_ReturnsItemsInOrder()
+    public async Task QueueService_RemoveFromQueue_ReturnsItemsInOrder()
     {
         // Arrange
         var service = new ImgQueueService();
@@ -58,9 +58,24 @@ public class ImgQueueServiceTest
         Assert.Same(firstImageJob, firstImageJobResult);
         Assert.Same(secondImageJob, secondImageJobResult);
     }
+    
+    [Fact]
+    public async Task QueueService_AddToQueue_ThrowsWhenCancelled()
+    {
+        // Arrange
+        var service = new ImgQueueService();
+        var imageJob = CreateImageJob();
+        using var cts = new CancellationTokenSource();
+
+        cts.Cancel();
+
+        // Act & Assert
+        await Assert.ThrowsAnyAsync<OperationCanceledException>(
+            () => service.AddToQueue(imageJob, cts.Token).AsTask());
+    }
 
     [Fact]
-    public async Task QueueService_DequeueAsync_ThrowsWhenCancelled()
+    public async Task QueueService_RemoveFromQueue_ThrowsWhenCancelled()
     {
         // Arrange
         var service = new ImgQueueService();

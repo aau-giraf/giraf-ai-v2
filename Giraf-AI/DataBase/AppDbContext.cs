@@ -20,10 +20,10 @@ public class AppDbContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         // Map the PostgreSQL enum
-        modelBuilder.HasPostgresEnum<IdType>("id_type");
+        modelBuilder.HasPostgresEnum<IdType>("public","id_type");
         modelBuilder.Entity<ImgGenQueue>(entity =>
         {
-            entity.ToTable("imggen_queue");
+            entity.ToTable("imggen_queue", "public");
             entity.HasKey(e => e.QueueId);
             entity.Property(e => e.QueueId).HasColumnName("queue_id").ValueGeneratedOnAdd();
             entity.Property(e => e.Prompt).HasColumnName("prompt").HasMaxLength(500).IsRequired();
