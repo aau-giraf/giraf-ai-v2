@@ -27,9 +27,8 @@ CREATE TYPE language AS ENUM ('da', 'en');
 CREATE TYPE origin_app AS ENUM ('vta', 'fp');
 
 CREATE TABLE "imggen_queue" (
-    queue_id    SERIAL PRIMARY KEY NOT NULL,
     prompt      VARCHAR(500) NOT NULL,
-    image_id    VARCHAR(100) NOT NULL,
+    image_id    VARCHAR(100) PRIMARY KEY NOT NULL,
     map_id      INTEGER NOT NULL,
     id_type     id_type NOT NULL,
     origin_app  origin_app NOT NULL,
@@ -38,7 +37,7 @@ CREATE TABLE "imggen_queue" (
 
 CREATE TABLE "tts_queue" (
      prompt      VARCHAR(500) NOT NULL,
-     tts_id      VARCHAR(100) NOT NULL,
+     tts_id      VARCHAR(100) PRIMARY KEY NOT NULL,
      language    language NOT NULL,
      origin_app  origin_app NOT NULL,
      received    TIMESTAMP NOT NULL

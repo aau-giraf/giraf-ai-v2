@@ -19,15 +19,13 @@ public class AppDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        // Map the PostgreSQL enum
         modelBuilder.HasPostgresEnum<IdType>("id_type");
-        modelBuilder.HasPostgresEnum<OriginApp>("origin_app");
         modelBuilder.HasPostgresEnum<LangType>("language");
+
         modelBuilder.Entity<ImgQueue>(entity =>
         {
             entity.ToTable("imggen_queue");
-            entity.HasKey(e => e.QueueId);
-            entity.Property(e => e.QueueId).HasColumnName("queue_id").ValueGeneratedOnAdd();
+            entity.HasKey(e => e.ImageId);
             entity.Property(e => e.Prompt).HasColumnName("prompt").HasMaxLength(500).IsRequired();
             entity.Property(e => e.ImageId).HasColumnName("image_id").HasMaxLength(100).IsRequired();
             entity.Property(e => e.MapId).HasColumnName("map_id").IsRequired();

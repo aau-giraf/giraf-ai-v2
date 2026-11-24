@@ -162,8 +162,9 @@ public sealed class TtsQueueHostedService(
         // used to reconstruct queue messages; they are not edited here.
         List<TtsQueue> pendingEntries = await dbContext.TtsQueues
             .AsNoTracking()
-            // Restore in TTS ID order to keep recovery deterministic.
-            .OrderBy(entry => entry.TtsId)
+            // Restore in request-received order to preserve FIFO behavior.
+            .OrderBy(entry => entry.Received)
+            .ThenBy(entry => entry.TtsId)
             .ToListAsync(cancellationToken);
 
         foreach (TtsQueue entry in pendingEntries)

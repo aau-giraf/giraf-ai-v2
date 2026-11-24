@@ -7,9 +7,8 @@ namespace Giraf_AI.Models;
 
 public class ImgQueue
 {
-    public int QueueId { get; set; } // SERIAL PRIMARY KEY
     public string Prompt { get; set; } = null!;
-    public string ImageId { get; set; } = null!;
+    public string ImageId { get; set; } = null!; // PRIMARY KEY
     public int MapId { get; set; }
     public IdType IdType { get; set; }
     public OriginApp OriginApp { get; set; }

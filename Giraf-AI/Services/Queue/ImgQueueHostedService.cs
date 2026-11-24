@@ -53,12 +53,12 @@ public sealed class ImgQueueHostedService(
                     stoppingToken);
 
                 int deletedRows = await dbContext.ImgGenQueues
-                    .Where(entry => entry.QueueId == job.QueueId)
+                    .Where(entry => entry.ImageId == job.ImageId)
                     .ExecuteDeleteAsync(stoppingToken);
                 if (deletedRows != 1)
                 {
                     throw new InvalidOperationException(
-                        $"Expected to delete queue entry {job.QueueId}, but deleted {deletedRows} rows.");
+                        $"Expected to delete queue entry {job.ImageId}, but deleted {deletedRows} rows.");
                 }
 
                 job.Completion.TrySetResult(result);
@@ -69,7 +69,7 @@ public sealed class ImgQueueHostedService(
                 AppDbContext dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 
                 await dbContext.ImgGenQueues
-                    .Where(entry => entry.QueueId == job.QueueId)
+                    .Where(entry => entry.ImageId == job.ImageId)
                     .ExecuteDeleteAsync(stoppingToken);
 
                 job.Completion.TrySetException(e);
@@ -130,14 +130,15 @@ public sealed class ImgQueueHostedService(
 
         List<ImgQueue> pendingEntries = await dbContext.ImgGenQueues
             .AsNoTracking()
-            .OrderBy(entry => entry.QueueId)
+            .OrderBy(entry => entry.Received)
+            .ThenBy(entry => entry.ImageId)
             .ToListAsync(cancellationToken);
 
         foreach (ImgQueue entry in pendingEntries)
         {
             var job = new ImageJob
             {
-                QueueId = entry.QueueId,
+                ImageId = entry.ImageId,
                 Request = new ImageRequest
                 {
                     Prompt = entry.Prompt,
@@ -149,22 +150,22 @@ public sealed class ImgQueueHostedService(
                         IdType.class_id => "ClassID",
                         IdType.organization_id => "OrganizationID",
                         _ => throw new InvalidOperationException(
-                            $"Queue entry {entry.QueueId} has an unsupported ID type.")
+                            $"Queue entry {entry.ImageId} has an unsupported ID type.")
                     },
                     OriginApp = entry.OriginApp switch
                     {
                         OriginApp.vta => "vta",
                         OriginApp.fp => "fp",
                         _ => throw new InvalidOperationException(
-                            $"Queue entry {entry.QueueId} has an unsupported origin app.")
+                            $"Queue entry {entry.ImageId} has an unsupported origin app.")
                     }
                 }
             };
 
             await imgQueueService.AddToQueue(job, cancellationToken);
             logger.LogInformation(
-                "Restored pending image job for queue entry {QueueId}.",
-                entry.QueueId);
+                "Restored pending image job for queue entry {ImageId}.",
+                entry.ImageId);
         }
     }
 }

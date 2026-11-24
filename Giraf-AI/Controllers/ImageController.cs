@@ -67,7 +67,7 @@ public class ImageGenerationController(
             var job = new ImageJob
             {
                 Request = normalizedRequest,
-                QueueId = queueEntry.QueueId
+                ImageId = queueEntry.ImageId
             };
             await imgQueueService.AddToQueue(job, cancellationToken);
             await job.Completion.Task.WaitAsync(cancellationToken);
