@@ -60,10 +60,10 @@ Send JSON `POST` requests to:
 
 ```json
 {
-  "Prompt": "madpakke med en sandwich",
+  "prompt": "madpakke med en sandwich",
   "MapID": 4202,
-  "IdType": "CitizenID",
-  "ImgID": "57201",
+  "idType": "CitizenId",
+  "imgID": "57201",
   "OriginApp": "fp"
 }
 ```
@@ -80,10 +80,10 @@ Send JSON `POST` requests to:
 
 ```json
 {
-  "Text": "En melon der er skåret ud i både",
-  "TtsID": "12",
-  "Lang": "da",
-  "OriginApp": "fp"
+  "text": "En melon der er skåret ud i både",
+  "ttsID": "12",
+  "lang": "da",
+  "originApp": "fp"
 }
 ```
 

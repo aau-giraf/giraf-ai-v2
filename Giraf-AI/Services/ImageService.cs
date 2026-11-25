@@ -87,12 +87,12 @@ public class ImageService
         {
             TitleDa = titleDa,
             TitleEn = titleEn,
-            ImgID = req.ImgID,
+            ImgId = req.ImgID,
             OriginApp = originApp,
             // Only fill in the correct ID. The ID's with null will not be present in the return body
-            CitizenID = idType == "citizenid" ? req.MapID : null,
-            ClassID = idType == "classid" ? req.MapID : null,
-            OrganizationID = idType == "organizationid" ? req.MapID : null,
+            CitizenId = idType == "citizenid" ? req.MapID : null,
+            ClassId = idType == "classid" ? req.MapID : null,
+            OrganizationId = idType == "organizationid" ? req.MapID : null,
             ImageData = imgData
         };
     }

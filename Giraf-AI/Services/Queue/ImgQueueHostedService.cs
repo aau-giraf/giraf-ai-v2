@@ -160,9 +160,9 @@ public sealed class ImgQueueHostedService(
                     MapID = entry.MapId,
                     IdType = entry.IdType switch
                     {
-                        IdType.citizen_id => "CitizenID",
-                        IdType.class_id => "ClassID",
-                        IdType.organization_id => "OrganizationID",
+                        IdType.citizen_id => "CitizenId",
+                        IdType.class_id => "ClassId",
+                        IdType.organization_id => "OrganizationId",
                         _ => throw new InvalidOperationException(
                             $"Queue entry {entry.ImageId} has an unsupported ID type.")
                     },
