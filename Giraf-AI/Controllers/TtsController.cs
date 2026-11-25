@@ -24,11 +24,15 @@ public class TtsController(
         {
             var originApp = request.OriginApp
                 ?? throw new ArgumentException("OriginApp is required.");
+            var language = string.IsNullOrWhiteSpace(request.Lang)
+                ? "da"
+                : request.Lang.Trim().ToLowerInvariant();
+
             var normalizedRequest = new TtsRequest
             {
                 Text = request.Text,
                 TtsID = request.TtsID,
-                Lang = request.Lang,
+                Lang = language,
                 OriginApp = originApp
             };
 
@@ -36,7 +40,7 @@ public class TtsController(
             {
                 Prompt = request.Text,
                 TtsId = request.TtsID,
-                Lang = (request.Lang?.Trim().ToLowerInvariant() ?? string.Empty) switch
+                Lang = language switch
                 {
                     "da" => LangType.da,
                     "en" => LangType.en,
@@ -57,6 +61,8 @@ public class TtsController(
             await queueService.AddToQueue(job, cancellationToken);
             return Accepted();
         }
+        
+        // Handle cancellation requests gracefully by returning an empty result
         catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
         {
             return new EmptyResult();

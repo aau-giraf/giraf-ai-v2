@@ -1,78 +1,95 @@
-﻿
+# GIRAF AI
 
-To run the application you need to set up a PostgreSQL database.
+GIRAF AI provides HTTP endpoints for image generation and text-to-speech (TTS).
 
-Then you need to run the following command inside the terminal to run the application:
+## Requirements
 
-```dotnet run```
+- .NET 10 SDK
+- A reachable PostgreSQL server and credentials with permission to create the configured database and its schema
+- Node.js, only if you want to run the local mock callback server
 
-To receive the results and save them on your local maching you need to run the mock server in a seperate terminal:
+## Run the application
 
-```node MockServer/server.js```
+Set the `ConnectionStrings:DefaultConnection` connection string in `DataBase/appsettings.json` to point to a PostgreSQL server the application can access.
 
-This will save both the requests and the attached files in your /%USER%/documents/generations/ folder
+On startup, the application creates the configured database and full schema if they do not already exist. No manual database or schema setup is needed. This is automatic creation, not a schema migration: it will not update an existing database whose schema is outdated.
 
-**Database setup**
+From this directory, start the API:
 
-You need to name the database ```GIRAF_AI_DB``` with the password ```SQLvmDBaccess```
-
-To set up the database, run the following SQL commands:
-
-```postgresql
-DROP TABLE imggen_queue;
-DROP TABLE tts_queue;
-
-CREATE TYPE id_type AS ENUM ('citizen_id', 'class_id', 'organization_id');
-CREATE TYPE language AS ENUM ('da', 'en');
-
-CREATE TABLE "imggen_queue" (
-    queue_id    SERIAL PRIMARY KEY NOT NULL,
-    prompt      VARCHAR(500) NOT NULL,
-    image_id    VARCHAR(100) NOT NULL,
-    map_id      INTEGER NOT NULL,
-    id_type     id_type NOT NULL,
-    origin_app  VARCHAR(10) NOT NULL,
-    received    TIMESTAMP NOT NULL
-);
-
-CREATE TABLE "tts_queue" (
-     prompt      VARCHAR(500) NOT NULL,
-     tts_id      VARCHAR(100) NOT NULL,
-     language    language NOT NULL,
-     origin_app  VARCHAR(10) NOT NULL,
-     received    TIMESTAMP NOT NULL
-); 
+```bash
+dotnet run
 ```
 
-To send post requests to the application you can use Postman or any other tool that can send HTTP requests. The endpoints are as follows:
+The API listens at <http://localhost:8100>.
 
-**Image generation endpoint**
+### Optional: reset an outdated database schema
 
-```POST localhost:8100/api/image-generation```
+Use this only when an existing application database has an outdated schema. **These commands permanently delete the queue tables and their data.** Connect to the configured database, run the SQL below, then restart the application so it can recreate the schema. Back up any data you need first.
 
-**Text to speech endpoint**
+```sql
+DROP TABLE IF EXISTS imggen_queue;
+DROP TABLE IF EXISTS tts_queue;
 
-```POST localhost:8100/api/tts```
+DROP TYPE IF EXISTS id_type;
+DROP TYPE IF EXISTS language;
+DROP TYPE IF EXISTS origin_app;
+```
 
-**image generation request body example**
+This reset assumes no other database objects depend on these types.
+
+## Local mock callback server
+
+The mock server accepts generated media callbacks and saves the callback JSON and media files under `~/Documents/generations/`. Start it from this directory in a separate terminal if you need to test or capture those callbacks:
+
+```bash
+node MockServer/server.js
+```
+
+It listens on port `4500`.
+
+## API
+
+Send JSON `POST` requests to:
+
+| Purpose | Endpoint |
+| --- | --- |
+| Image generation | `http://localhost:8100/api/image-generation` |
+| Text to speech | `http://localhost:8100/api/tts` |
+
+### Image generation request
 
 ```json
 {
-    "Prompt": "madpakke med en sandwich",
-    "MapID": 4202,
-    "IdType": "CitizenID",
-    "ImgID": "57201",
-    "OriginApp": "fp"
+  "prompt": "madpakke med en sandwich",
+  "MapID": 4202,
+  "idType": "CitizenId",
+  "imgID": "57201",
+  "OriginApp": "fp"
 }
 ```
 
-**text to speech request body example**
+| Property | Type | Required | Allowed values / constraints |
+| --- | --- | --- | --- |
+| `Prompt` | String | Yes | Up to 500 characters |
+| `MapID` | Integer | Yes | Positive integer |
+| `IdType` | String | Yes | `CitizenID`, `ClassID`, or `OrganizationID` (case-insensitive) |
+| `ImgID` | String | Yes | GUID |
+| `OriginApp` | String | Yes | `fp` (Foodplanner) or `vta` (case-insensitive) |
+
+### Text-to-speech request
 
 ```json
 {
-    "text": "En melon der er skåret ud i både",
-    "ttsID": 12,
-    "lang": "da",
-    "originApp": "fp"
+  "text": "En melon der er skåret ud i både",
+  "ttsID": "12",
+  "lang": "da",
+  "originApp": "fp"
 }
 ```
+
+| Property | Type | Required | Allowed values / constraints |
+| --- | --- | --- | --- |
+| `Text` | String | Yes | Up to 500 characters |
+| `TtsID` | String | Yes | GUID |
+| `Lang` | String | No | `da` (Danish, default when omitted or blank) or `en` (English) |
+| `OriginApp` | String | Yes | `fp` or `vta` |

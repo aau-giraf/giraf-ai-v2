@@ -11,14 +11,15 @@ public class ImageResult
 {
     public required string TitleDa { get; init; } = string.Empty;
     public required string TitleEn { get; init; } = string.Empty;
-    public required string ImgID { get; init; } = string.Empty;
+    public required string ImgId { get; init; } = string.Empty;
+    public required string OriginApp { get; init; } = string.Empty;
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public int? CitizenID { get; init; }
+    public int? CitizenId { get; init; }
 
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public int? ClassID { get; init; }
+    public int? ClassId { get; init; }
 
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public int? OrganizationID { get; init; }
+    public int? OrganizationId { get; init; }
     public required string ImageData { get; init; } = string.Empty;
 }

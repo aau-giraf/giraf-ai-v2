@@ -23,5 +23,5 @@ public class TtsRequest
 
     [RegularExpression("^(?i)(da|en)$", 
         ErrorMessage = "Lang must be either 'da' or 'en', case-insensitive")] // Ensures that the value is either "da" or "en", case-insensitive
-    public required string? Lang { get; init; } = string.Empty;
+    public string? Lang { get; init; } = "da";
 }

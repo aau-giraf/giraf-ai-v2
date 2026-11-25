@@ -28,12 +28,10 @@ public class ImageService : IImageService
         _imageGenerationService = imageGenerationService;
     }
 
-    public async Task<ImageResult> ProcessImageRequestAsync(ImageRequest req)
+    public async Task<ImageResult> ProcessImageRequestAsync(ImageRequest req, Action onContentCheckPassed)
     {
         // Normalize the origin app to lowercase for consistent processing
-        var originApp = req.OriginApp
-            ?.Trim()
-            .ToLowerInvariant()
+        var originApp = req.OriginApp.Trim().ToLowerInvariant()
             ?? throw new InvalidOperationException("The request contains no origin app.");
         var idType = req.IdType.Trim().ToLowerInvariant();
 
@@ -55,6 +53,9 @@ public class ImageService : IImageService
         {
             throw new ContentFilterViolationException();
         }
+        
+        // Close the TCP connection to FP / VTA and signal that the content check has passed and they can expect a response
+        onContentCheckPassed();
         
         // Determine the correct title master prompt based on the origin app
         var titleMasterPromptDa = originApp switch
@@ -86,11 +87,12 @@ public class ImageService : IImageService
         {
             TitleDa = titleDa,
             TitleEn = titleEn,
-            ImgID = req.ImgID,
+            ImgId = req.ImgID,
+            OriginApp = originApp,
             // Only fill in the correct ID. The ID's with null will not be present in the return body
-            CitizenID = idType == "citizenid" ? req.MapID : null,
-            ClassID = idType == "classid" ? req.MapID : null,
-            OrganizationID = idType == "organizationid" ? req.MapID : null,
+            CitizenId = idType == "citizenid" ? req.MapID : null,
+            ClassId = idType == "classid" ? req.MapID : null,
+            OrganizationId = idType == "organizationid" ? req.MapID : null,
             ImageData = imgData
         };
     }

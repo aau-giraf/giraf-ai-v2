@@ -25,7 +25,7 @@ public class ImageGenerationController(
         try
         {
             // Normalize the origin app to lowercase for consistent processing
-            var originApp = request.OriginApp
+            var originApp = request.OriginApp.Trim().ToLowerInvariant()
                 ?? throw new ArgumentException("OriginApp is required.");
             var idType = request.IdType.Trim().ToLowerInvariant();
             var normalizedRequest = new ImageRequest
@@ -67,10 +67,10 @@ public class ImageGenerationController(
             var job = new ImageJob
             {
                 Request = normalizedRequest,
-                QueueId = queueEntry.QueueId
+                ImageId = queueEntry.ImageId
             };
             await imgQueueService.AddToQueue(job, cancellationToken);
-            await job.Completion.Task.WaitAsync(cancellationToken);
+            await job.ContentCheck.Task.WaitAsync(cancellationToken);
             return Accepted();
         }
         
