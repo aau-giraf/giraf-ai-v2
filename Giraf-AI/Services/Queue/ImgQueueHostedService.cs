@@ -52,9 +52,10 @@ public sealed class ImgQueueHostedService(
                     job.Id,
                     stoppingToken);
 
-                int deletedRows = await dbContext.ImgGenQueues
+                /*int deletedRows = await dbContext.ImgGenQueues
                     .Where(entry => entry.QueueId == job.QueueId)
-                    .ExecuteDeleteAsync(stoppingToken);
+                    .ExecuteDeleteAsync(stoppingToken);*/
+                int deletedRows = await DeleteQueueEntryAsync(dbContext, job.QueueId, stoppingToken);
                 if (deletedRows != 1)
                 {
                     throw new InvalidOperationException(
@@ -68,9 +69,10 @@ public sealed class ImgQueueHostedService(
                 using IServiceScope scope = scopeFactory.CreateScope();
                 AppDbContext dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 
-                await dbContext.ImgGenQueues
+                /*await dbContext.ImgGenQueues
                     .Where(entry => entry.QueueId == job.QueueId)
-                    .ExecuteDeleteAsync(stoppingToken);
+                    .ExecuteDeleteAsync(stoppingToken);*/
+                await DeleteQueueEntryAsync(dbContext, job.QueueId, stoppingToken);
 
                 job.Completion.TrySetException(e);
             }
@@ -166,5 +168,22 @@ public sealed class ImgQueueHostedService(
                 "Restored pending image job for queue entry {QueueId}.",
                 entry.QueueId);
         }
+    }
+    
+    private static async Task<int> DeleteQueueEntryAsync(
+        AppDbContext dbContext,
+        int queueId,
+        CancellationToken cancellationToken)
+    {
+        var entry = await dbContext.ImgGenQueues
+            .SingleOrDefaultAsync(entry => entry.QueueId == queueId, cancellationToken);
+
+        if (entry is null)
+        {
+            return 0;
+        }
+
+        dbContext.ImgGenQueues.Remove(entry);
+        return await dbContext.SaveChangesAsync(cancellationToken);
     }
 }

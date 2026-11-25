@@ -23,4 +23,8 @@
         <ProjectReference Include="..\Giraf-AI\Giraf-AI.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Database\" />
+    </ItemGroup>
+
 </Project>
