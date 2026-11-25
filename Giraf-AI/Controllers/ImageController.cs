@@ -70,7 +70,7 @@ public class ImageGenerationController(
                 ImageId = queueEntry.ImageId
             };
             await imgQueueService.AddToQueue(job, cancellationToken);
-            await job.Completion.Task.WaitAsync(cancellationToken);
+            await job.ContentCheck.Task.WaitAsync(cancellationToken);
             return Accepted();
         }
         

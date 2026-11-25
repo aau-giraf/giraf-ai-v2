@@ -28,7 +28,7 @@ public class ImageService
         _imageGenerationService = imageGenerationService;
     }
 
-    public async Task<ImageResult> ProcessImageRequestAsync(ImageRequest req)
+    public async Task<ImageResult> ProcessImageRequestAsync(ImageRequest req, Action onContentCheckPassed)
     {
         // Normalize the origin app to lowercase for consistent processing
         var originApp = req.OriginApp.Trim().ToLowerInvariant()
@@ -53,6 +53,9 @@ public class ImageService
         {
             throw new ContentFilterViolationException();
         }
+        
+        // Close the TCP connection to FP / VTA and signal that the content check has passed and they can expect a response
+        onContentCheckPassed();
         
         // Determine the correct title master prompt based on the origin app
         var titleMasterPromptDa = originApp switch
@@ -85,6 +88,7 @@ public class ImageService
             TitleDa = titleDa,
             TitleEn = titleEn,
             ImgID = req.ImgID,
+            OriginApp = originApp,
             // Only fill in the correct ID. The ID's with null will not be present in the return body
             CitizenID = idType == "citizenid" ? req.MapID : null,
             ClassID = idType == "classid" ? req.MapID : null,

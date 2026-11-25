@@ -109,6 +109,9 @@ public sealed class TtsQueueHostedService(
         }
     }
 
+    // <summary>
+    // Repeatedly attempts to deliver the completed TTS result to GIRAF CORE until it receives a 202 Accepted response.
+    // </summary>
     private async Task DeliverResultUntilAcceptedAsync(
         HttpClient client,
         string callbackPath,
@@ -120,6 +123,7 @@ public sealed class TtsQueueHostedService(
         {
             try
             {
+                // Send the completed TTS result to GIRAF CORE and wait for a response.
                 using HttpResponseMessage response = await client.PostAsJsonAsync(
                     callbackPath, result, cancellationToken);
 
@@ -127,18 +131,23 @@ public sealed class TtsQueueHostedService(
                 {
                     return;
                 }
-
+                
+                // Log a warning and retry if the response is not 202 Accepted.
                 logger.LogWarning(
                     "TTS callback for job {JobId} returned status {StatusCode}; retrying.",
                     jobId,
                     (int)response.StatusCode);
             }
+            
+            // Catch the operation canceled exception that occurs when the HTTP request times out, but only if the cancellation was not requested by the service itself.
             catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested)
             {
                 logger.LogWarning(
                     "TTS callback for job {JobId} timed out; retrying.",
                     jobId);
             }
+            
+            // Log a warning and retry if the HTTP request fails due to network issues or other problems.
             catch (HttpRequestException e)
             {
                 logger.LogWarning(
@@ -151,6 +160,9 @@ public sealed class TtsQueueHostedService(
         }
     }
 
+    // <summary>
+    // Restores any TTS jobs that were persisted in the database but not yet processed when the previous instance of the service stopped.
+    // </summary>
     private async Task RestorePendingJobsAsync(CancellationToken cancellationToken)
     {
         // Jobs are persisted before they enter the in-memory channel, so restore any
