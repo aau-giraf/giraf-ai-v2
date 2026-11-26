@@ -26,29 +26,6 @@ public class ImgQueueHostedServiceTest
     }
     
     [Fact]
-    public async Task Placeholder()
-    {
-        // Arrange
-        /*var imageJob = CreateImageJob();
-        var queue = new ImgQueueServiceMock();
-        await queue.AddToQueue(imageJob, CancellationToken.None);
-
-        var imageService = new ImageServiceMock();
-
-        using var provider = ServiceFactory.CreateImgQueueHostedService(
-            queue,
-            httpClientFactory,
-            imageService,
-            options => options.UseInMemoryDatabase(Guid.NewGuid().ToString()));
-
-        var hostedService = provider.GetRequiredService<ImgQueueHostedService>();*/
-
-        // Act
-
-        // Assert
-    }
-
-    [Fact]
     public async Task ProcessesRestoredJobAndDeletesQueueEntry()
     {
         var dbFactory = new DbContextFactory();
