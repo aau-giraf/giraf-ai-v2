@@ -76,22 +76,66 @@ public class ServiceFactory
         return serviceProvider.GetRequiredService<ImgQueueHostedService>();
     }*/
     
-    public static (ServiceProvider, FakeHttpMessageHandler Handler) CreateImgQueueHostedService(
+    /*public static (ServiceProvider, FakeHttpMessageHandler) CreateImgQueueHostedService(
+        IQueueService<ImageJob> queue,
+        IImageService imageService,
+        Action<DbContextOptionsBuilder> configureDb,
+        Func<HttpResponseMessage> responseFactory)
+    {
+        var services = new ServiceCollection();
+
+        
+        services.AddLogging();
+        services.AddDbContext<AppDbContext>(configureDb);
+
+        var handler = new FakeHttpMessageHandler(responseFactory);
+        /*services.AddSingleton<HttpClient>(_ => new HttpClient(new FakeHttpMessageHandler(responses))
+        {
+            BaseAddress = new Uri("http://localhost/")
+        });#1#
+        services.AddSingleton(handler);
+        services.AddSingleton(_ => new HttpClient(handler)
+        {
+            BaseAddress = new Uri("http://localhost/")
+        });
+        services.AddSingleton<IHttpClientFactory, FakeHttpClientFactory>();
+        services.AddSingleton<IQueueService<ImageJob>>(queue);
+        services.AddScoped<IImageService>(_ => imageService);
+        services.AddSingleton<ImgQueueHostedService>();
+
+        return (services.BuildServiceProvider(validateScopes: true), handler);
+    }*/
+    
+    public static (ServiceProvider, FakeHttpMessageHandler) CreateImgQueueHostedService(
         IQueueService<ImageJob> queue,
         IImageService imageService,
         Action<DbContextOptionsBuilder> configureDb,
         params HttpResponseMessage[] responses)
     {
+        return CreateImgQueueHostedService(
+            queue, imageService, configureDb, new FakeHttpMessageHandler(responses));
+    }
+
+    public static (ServiceProvider, FakeHttpMessageHandler) CreateImgQueueHostedService(
+        IQueueService<ImageJob> queue,
+        IImageService imageService,
+        Action<DbContextOptionsBuilder> configureDb,
+        Func<HttpResponseMessage> responseFactory)
+    {
+        return CreateImgQueueHostedService(
+            queue, imageService, configureDb, new FakeHttpMessageHandler(responseFactory));
+    }
+
+    private static (ServiceProvider, FakeHttpMessageHandler) CreateImgQueueHostedService(
+        IQueueService<ImageJob> queue,
+        IImageService imageService,
+        Action<DbContextOptionsBuilder> configureDb,
+        FakeHttpMessageHandler handler)
+    {
         var services = new ServiceCollection();
 
         services.AddLogging();
         services.AddDbContext<AppDbContext>(configureDb);
-
-        var handler = new FakeHttpMessageHandler(responses);
-        /*services.AddSingleton<HttpClient>(_ => new HttpClient(new FakeHttpMessageHandler(responses))
-        {
-            BaseAddress = new Uri("http://localhost/")
-        });*/
         services.AddSingleton(handler);
         services.AddSingleton(_ => new HttpClient(handler)
         {

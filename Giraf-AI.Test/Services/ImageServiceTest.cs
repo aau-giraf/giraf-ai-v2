@@ -21,15 +21,15 @@ public class ImageServiceTest
             IdType = "CitizenID",
             MapID = 123,
             OriginApp = "fp"
-        });
+        }, () => { });
 
         Assert.Equal("image_data_base64_encoded", result.ImageData);
-        Assert.Equal("1234", result.ImgID);
+        Assert.Equal("1234", result.ImgId);
         Assert.Equal("Dansk titel", result.TitleDa);
         Assert.Equal("English title", result.TitleEn);
-        Assert.Equal(123, result.CitizenID);
-        Assert.Null(result.ClassID);
-        Assert.Null(result.OrganizationID);
+        Assert.Equal(123, result.CitizenId);
+        Assert.Null(result.ClassId);
+        Assert.Null(result.OrganizationId);
     }
     
     [Fact]
@@ -49,7 +49,7 @@ public class ImageServiceTest
                 IdType = "CitizenID",
                 MapID = 123,
                 OriginApp = "fp"
-            }));
+            }, () => { }));
 
         Assert.IsType<ContentFilterViolationException>(exception);
     }
@@ -82,11 +82,11 @@ public class ImageServiceTest
         if (expectedNsfw)
         {
             await Assert.ThrowsAsync<ContentFilterViolationException>(
-                () => service.ProcessImageRequestAsync(request));
+                () => service.ProcessImageRequestAsync(request, () => { }));
         }
         else
         {
-            var result = await service.ProcessImageRequestAsync(request);
+            var result = await service.ProcessImageRequestAsync(request, () => { });
             Assert.NotNull(result);
         }
     }
@@ -114,7 +114,7 @@ public class ImageServiceTest
                 IdType = "CitizenID",
                 MapID = 123,
                 OriginApp = "fp"
-            }));
+            }, () => { }));
     }
     
     [Fact]
@@ -134,7 +134,7 @@ public class ImageServiceTest
             IdType = "CitizenID",
             MapID = 123,
             OriginApp = "fp"
-        }));
+        }, () => { }));
     }
     
 }

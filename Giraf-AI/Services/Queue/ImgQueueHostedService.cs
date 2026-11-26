@@ -187,11 +187,11 @@ public sealed class ImgQueueHostedService(
     
     private static async Task<int> DeleteQueueEntryAsync(
         AppDbContext dbContext,
-        int queueId,
+        string imageId,
         CancellationToken cancellationToken)
     {
         var entry = await dbContext.ImgGenQueues
-            .SingleOrDefaultAsync(entry => entry.QueueId == queueId, cancellationToken);
+            .SingleOrDefaultAsync(entry => entry.ImageId == imageId, cancellationToken);
 
         if (entry is null)
         {

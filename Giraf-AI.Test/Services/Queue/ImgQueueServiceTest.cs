@@ -10,7 +10,7 @@ public class ImgQueueServiceTest
     {
         return new ImageJob
         {
-            QueueId = 123,
+            ImageId = "123",
             Request = new ImageRequest
             {
                 Prompt = "A Cat",

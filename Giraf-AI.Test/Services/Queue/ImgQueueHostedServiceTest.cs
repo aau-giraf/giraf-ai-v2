@@ -80,11 +80,23 @@ public class ImgQueueHostedServiceTest
                 .WaitForAddedJobAsync(CancellationToken.None)
                 .AsTask().WaitAsync(TimeSpan.FromSeconds(5));
 
-            var result = await restoredJob.Completion.Task.WaitAsync(TimeSpan.FromSeconds(5));
+            await restoredJob.ContentCheck.Task.WaitAsync(TimeSpan.FromSeconds(5));
+
+            using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(5));
+            while (true)
+            {
+                await using var pollDb = dbFactory.CreateDbContext();
+                if (!await pollDb.ImgGenQueues.AnyAsync())
+                {
+                    break;
+                }
+
+                await Task.Delay(10, timeout.Token);
+            }
 
             await hostedService.StopAsync(CancellationToken.None);
 
-            Assert.Equal(queueEntry.ImageId, result.ImgID);
+            Assert.Equal(queueEntry.ImageId, restoredJob.Request.ImgID);
 
             await using var verifyDb = dbFactory.CreateDbContext();
             Assert.Empty(await verifyDb.ImgGenQueues.ToListAsync());
@@ -128,8 +140,22 @@ public class ImgQueueHostedServiceTest
                     .AsTask()
                     .WaitAsync(TimeSpan.FromSeconds(5));
 
-                await restoredJob.Completion.Task.WaitAsync(TimeSpan.FromSeconds(5));
+                await restoredJob.ContentCheck.Task.WaitAsync(TimeSpan.FromSeconds(5));
 
+                using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(5));
+
+                try
+                {
+                    while (handler.RequestCount < 2)
+                    {
+                        await Task.Delay(10, timeout.Token);
+                    }
+                }
+                catch (OperationCanceledException) when (timeout.IsCancellationRequested)
+                {
+                    Assert.Fail($"Expected 2 requests, but got {handler.RequestCount}");
+                }
+                
                 Assert.Equal(2, handler.RequestCount);
             }
             finally
@@ -153,20 +179,12 @@ public class ImgQueueHostedServiceTest
 
         var queue = new ImgQueueServiceMock();
         var imageService = new ImageServiceMock();
-
-        using var rejectedResponse1 = new HttpResponseMessage(HttpStatusCode.BadRequest);
-        using var rejectedResponse2 = new HttpResponseMessage(HttpStatusCode.BadRequest);
-        using var rejectedResponse3 = new HttpResponseMessage(HttpStatusCode.BadRequest);
-        using var rejectedResponse4 = new HttpResponseMessage(HttpStatusCode.BadRequest);
         
         var (provider, handler) = ServiceFactory.CreateImgQueueHostedService(
             queue,
             imageService,
             dbFactory.Configure,
-            rejectedResponse1,
-            rejectedResponse2,
-            rejectedResponse3,
-            rejectedResponse4);
+            () => new HttpResponseMessage(HttpStatusCode.BadRequest));
 
         using (provider)
         {
@@ -181,20 +199,22 @@ public class ImgQueueHostedServiceTest
                     .WaitAsync(TimeSpan.FromSeconds(5));
 
                 using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(5));
-
+                const int expectedAttempts = 5;
+                
                 try
                 {
-                    while (handler.RequestCount < 4)
+                    while (handler.RequestCount < expectedAttempts)
                     {
                         await Task.Delay(10, timeout.Token);
                     }
                 }
                 catch (OperationCanceledException) when (timeout.IsCancellationRequested)
                 {
-                    Assert.Fail($"Expected 4 requests, but got {handler.RequestCount}");
+                    Assert.Fail($"Expected {expectedAttempts} requests, but got {handler.RequestCount}");
                 }
-
-                Assert.False(restoredJob.Completion.Task.IsCompleted);
+                
+                Assert.True(handler.RequestCount >= expectedAttempts,
+                    $"Expected at least {expectedAttempts} requests, but got {handler.RequestCount}");
             }
             finally
             {
@@ -202,5 +222,4 @@ public class ImgQueueHostedServiceTest
             }
         }
     }
-    
 }

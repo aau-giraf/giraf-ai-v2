@@ -54,8 +54,8 @@ public class ImageRequestTest
     
     [Theory]
     [InlineData(1)]
-    [InlineData(99)]
-    [InlineData(100)]
+    [InlineData(499)]
+    [InlineData(500)]
     public void Prompt_AtOrBelowMax_IsValid(int length)
     {
         var dto = new ImageRequest
@@ -73,8 +73,8 @@ public class ImageRequestTest
     }
 
     [Theory]
-    [InlineData(101)]
-    [InlineData(150)]
+    [InlineData(501)]
+    [InlineData(550)]
     public void Prompt_AboveMax_IsInvalid(int length)
     {
         var dto = new ImageRequest

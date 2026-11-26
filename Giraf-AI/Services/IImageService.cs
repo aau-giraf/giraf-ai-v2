@@ -4,5 +4,5 @@ namespace Giraf_AI.Services;
 
 public interface IImageService
 {
-    public Task<ImageResult> ProcessImageRequestAsync(ImageRequest request);
+    public Task<ImageResult> ProcessImageRequestAsync(ImageRequest request, Action onContentCheckPassed);
 }
